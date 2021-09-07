@@ -2,7 +2,7 @@
 
 function usage {
   echo $1
-  echo "USAGE: create-s3-bucket.sh -i <cluster-id> -r <region>"
+  echo "USAGE: emr_cluster_script.sh -i <cluster-id> -r <region>"
   echo "  <cluster-id> is EMR cluster id, starts with 'j-'."
   echo "  <region> is the AWS region where the EMR cluster ran."
   exit 9
