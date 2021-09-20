@@ -2,7 +2,7 @@
 
 function usage {
   echo $1
-  echo "USAGE: emr_cluster_script.sh -i <cluster-id> -r <region>"
+  echo "USAGE: emr_clusterConf.sh -i <cluster-id> -r <region>"
   echo "  <cluster-id> is EMR cluster id, starts with 'j-'."
   echo "  <region> is the AWS region where the EMR cluster ran."
   exit 9
@@ -76,16 +76,18 @@ else
   DRIVER_EBS_VOLUMES=$(echo $INSTANCE_TWO | jq '.EbsBlockDevices | length')
 fi
 
-echo "driverInstanceType = ${DRIVER_INSTANCE_TYPE}"
-echo "driverEBSSize_GB   = ${DRIVER_EBS_SIZE}"
-echo "driverEBSVolumes   = ${DRIVER_EBS_VOLUMES}"
-echo "workerInstanceType = ${WORKER_INSTANCE_TYPE}"
-echo "numWorkers         = ${NUM_WORKERS}"
-echo "workerEBSSize_GB   = ${WORKER_EBS_SIZE}"
-echo "workerEBSVolumes   = ${WORKER_EBS_VOLUMES}"
+echo "InstanceGroupType: MASTER"
+echo "InstanceType = ${DRIVER_INSTANCE_TYPE}"
+echo "SizeInGB   = ${DRIVER_EBS_SIZE}"
+echo -e "VolumesPerInstance   = ${DRIVER_EBS_VOLUMES}\n"
+echo "InstanceGroupType: CORE"
+echo "InstanceType = ${WORKER_INSTANCE_TYPE}"
+echo "InstanceCount        = ${NUM_WORKERS}"
+echo "SizeInGB   = ${WORKER_EBS_SIZE}"
+echo -e "VolumesPerInstance   = ${WORKER_EBS_VOLUMES}\n"
 echo "region             = ${REGION}"
-echo "availabilityZone   = ${AZ}"
+echo -e "availabilityZone   = ${AZ}\n"
 
-printf '{"driverInstanceType":"%s","driverEBSSize_GB":"%s","driverEBSVolumes":"%s","workerInstanceType":"%s","numWorkers":"%s","workerEBSSize_GB":"%s","workerEBSVolumes":"%s","region":"%s","availabilityZone":"%s"}\n' \
+printf '{"InstanceGroupType": {"MASTER": {"InstanceType":"%s", "SizeInGB":"%s", "VolumesPerInstance":"%s"},"CORE": {"InstanceType":"%s", "InstanceCount":"%s", "SizeInGB":"%s", "VolumesPerInstance":"%s"}}, "region":"%s", "availabilityZone":"%s"}\n' \
 "${DRIVER_INSTANCE_TYPE}" "${DRIVER_EBS_SIZE}" "${DRIVER_EBS_VOLUMES}" "${WORKER_INSTANCE_TYPE}" "${NUM_WORKERS}" \
 "${WORKER_EBS_SIZE}" "${WORKER_EBS_VOLUMES}" "${REGION}" "${AZ}"
