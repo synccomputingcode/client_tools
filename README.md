@@ -10,7 +10,7 @@ This repo contains Sync Computing tools used to feed into our product.
 
 The script relies on AWS CLI to retreive the data.
 
-[AWS ClI installation instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+[AWS CLI installation instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
 
 ### Usage

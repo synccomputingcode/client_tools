@@ -41,7 +41,6 @@ prereqs
 
 CLUSTER_TYPE=$(aws emr describe-cluster --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Cluster.InstanceCollectionType')
 
-#echo $CLUSTER_TYPE
 
 RESPONSE=""
 LIST_INSTANCES=""
@@ -62,6 +61,13 @@ else
 fi
 
 
-echo $OUTPUT
+jq --version >/dev/null 2>&1
+if [[ $? -ne 0 ]]; then
+  echo "\nInstall JQ at https://stedolan.github.io/jq/ for a pretty-print JSON output\n"
+  echo $OUTPUT
+else
+  echo $OUTPUT | jq '.'
+fi
+
 
 
