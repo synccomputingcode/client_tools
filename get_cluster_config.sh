@@ -48,14 +48,14 @@ LIST_INSTANCES=""
 if [[ $CLUSTER_TYPE == '"INSTANCE_GROUP"' ]];
 then
     # UNIFORM
-    RESPONSE=$(aws emr describe-cluster --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Cluster.{ID: Id, Timeline: Status.Timeline, AvailabilityZone: Ec2InstanceAttributes.Ec2AvailabilityZone, InstanceCollectionType: InstanceCollectionType, InstanceGroups: InstanceGroups[*].{InstanceGroupType: InstanceGroupType, InstanceType: InstanceType, RequestedInstanceCount: RequestedInstanceCount, VolumeSpecification: EbsBlockDevices[*].{SizeInGB: VolumeSpecification.SizeInGB}}}')
+    RESPONSE=$(aws emr describe-cluster --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Cluster.{ID: Id, Timeline: Status.Timeline, AvailabilityZone: Ec2InstanceAttributes.Ec2AvailabilityZone, InstanceCollectionType: InstanceCollectionType, InstanceGroups: InstanceGroups[*].{InstanceGroupType: InstanceGroupType, Market: Market, InstanceType: InstanceType, RequestedInstanceCount: RequestedInstanceCount, VolumeSpecification: EbsBlockDevices[*].{SizeInGB: VolumeSpecification.SizeInGB}}}')
     JSON='{"cluster": %s, "region": "%s"}\n'
     OUTPUT=$(printf "$JSON" "$RESPONSE" "$REGION")
 
 else
     # FLEET
-    RESPONSE=$(aws emr describe-cluster --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Cluster.{ID: Id, Timeline: Status.Timeline, AvailabilityZone: Ec2InstanceAttributes.Ec2AvailabilityZone, InstanceCollectionType: InstanceCollectionType, InstanceFleets: InstanceFleets[*].{FleetId: Id, InstanceFleetType: InstanceFleetType, InstanceTypeSpecifications: InstanceTypeSpecifications[*].{InstanceType: InstanceType, VolumeSpecification: EbsBlockDevices[*].{SizeInGB: VolumeSpecification.SizeInGB}}}}')
-    LIST_INSTANCES=$(aws emr list-instances --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Instances[*].{Id: Id, InstanceFleetId: InstanceFleetId, InstanceType: InstanceType, Timeline: Status.Timeline}')
+    RESPONSE=$(aws emr describe-cluster --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Cluster.{ID: Id, Timeline: Status.Timeline, AvailabilityZone: Ec2InstanceAttributes.Ec2AvailabilityZone, InstanceCollectionType: InstanceCollectionType, InstanceFleets: InstanceFleets[*].{FleetId: Id, InstanceFleetType: InstanceFleetType, TargetOnDemandCapacity: TargetOnDemandCapacity, TargetSpotCapacity: TargetSpotCapacity, InstanceTypeSpecifications: InstanceTypeSpecifications[*].{InstanceType: InstanceType, VolumeSpecification: EbsBlockDevices[*].{SizeInGB: VolumeSpecification.SizeInGB}}}}')
+    LIST_INSTANCES=$(aws emr list-instances --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Instances[*].{Id: Id, InstanceFleetId: InstanceFleetId, Market: Market, InstanceType: InstanceType, Timeline: Status.Timeline}')
     JSON='{"cluster": %s, "list-instances": %s, "region": "%s"}\n'
     OUTPUT=$(printf "$JSON" "$RESPONSE" "$LIST_INSTANCES" "$REGION")
 fi
