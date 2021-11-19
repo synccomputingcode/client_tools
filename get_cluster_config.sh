@@ -1,3 +1,4 @@
+#!/bin/bash
 function usage {
   echo $1
   echo "USAGE: emr_clusterConf.sh -i <cluster-id> -r <region>"
@@ -63,7 +64,7 @@ fi
 
 jq --version >/dev/null 2>&1
 if [[ $? -ne 0 ]]; then
-  echo "\nInstall JQ at https://stedolan.github.io/jq/ for a pretty-print JSON output\n"
+  >&2 echo "\nInstall JQ at https://stedolan.github.io/jq/ for a pretty-print JSON output\n"
   echo $OUTPUT
 else
   echo $OUTPUT | jq '.'
