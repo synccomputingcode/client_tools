@@ -2,7 +2,7 @@
 
 This repo contains Sync Computing tools used to feed into our product.
 
-## get_cluster_config.sh
+## Step 1: Retrieve and paste your cluster info (get_cluster_config.sh)
 
 `get_cluster_config.sh` parses results of AWS CLI 'describe-cluster' and 'list-instances' command into a format accepted by our Prediction UI.
 
@@ -38,7 +38,7 @@ The script relies on AWS CLI to retreive the data.
 `<region>` represents [the region the cluster ran in](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions). The script doesn't rely on the region configured in AWS config to align with the region the cluster actually ran in. (e.g. us-east-1)
 
 
-## How to download Spark EMR Logs
+## Step 2: Retrieve EMR Spark logs and upload
 
 1.  Go to the EMR console in AWS, and find the cluster that ran the job you are interested in optimizing. Click on the cluster name to view details of the cluster.
 <img src="https://user-images.githubusercontent.com/59929718/147900986-44b68adf-8f7d-4fda-b84b-2c54f6015fc5.png" width="50%" height="50%">
