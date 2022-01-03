@@ -1,6 +1,6 @@
 # Sync Computing Client Tools
 
-This repo contains Sync Computing tools used to feed into our product.
+This repo contains Sync Computing tools used to feed the required information into the Sync Autotuner for Apache Spark.
 
 ## Step 1: Retrieve and paste your cluster info (get_cluster_config.sh)
 
