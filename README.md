@@ -19,6 +19,12 @@ The script relies on AWS CLI to retreive the data.
 ./get_cluster_config.sh -i <cluster-id> -r <region>
 ```
 
+### Example
+
+```bash
+./get_cluster_config.sh -i j-3WBO3J7R6PVS -r us-east-1
+```
+
 `<cluster id>` is the cluster id that you are interested in parsing. The cluster id is prefixed with 'j-'.
 
 <img src="https://user-images.githubusercontent.com/59929718/147899913-c1305da0-aab5-4882-8faa-3beeff710ec8.png" width="50%" height="50%">
