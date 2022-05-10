@@ -40,13 +40,15 @@ The script relies on AWS CLI to retreive the data.
 
 ## Step 2: Retrieve EMR Spark logs and upload into Autotuner step #2
 
-1.  Go to the EMR console in AWS, and find the cluster that ran the job you are interested in optimizing. Click on the cluster name to view details of the cluster.
+1.  Assure that you have spark.eventLog.enabled set to true for any jobs you are interested in optimizing. 
+
+2.  Go to the EMR console in AWS, and find the cluster that ran the job you are interested in optimizing. Click on the cluster name to view details of the cluster.
 <img src="https://user-images.githubusercontent.com/59929718/147900986-44b68adf-8f7d-4fda-b84b-2c54f6015fc5.png" width="50%" height="50%">
 
-2.  Once you are in the cluster information page, click on the “Application user interfaces” tab, and click on “Spark history server” (in red below) under “Persistent application user interfaces.”
+3.  Once you are in the cluster information page, click on the “Application user interfaces” tab, and click on “Spark history server” (in red below) under “Persistent application user interfaces.”
 <img src="https://user-images.githubusercontent.com/59929718/147901007-81f08b39-1c20-468f-b57c-57dcfe4e46d5.png" width="50%" height="50%">
 
 
-3.  A new tab should open up with the Spark history server. It may take a minute to load. Click the download button under the event log column to download the Spark event log. Upload this log into the Autotuner in step #2.
+4.  A new tab should open up with the Spark history server. It may take a minute to load. Click the download button under the event log column to download the Spark event log. Upload this log into the Autotuner in step #2.
 <img src="https://user-images.githubusercontent.com/59929718/147901014-2c111ad3-3a74-4786-971c-880e578c9257.png" width="50%" height="50%">
 
