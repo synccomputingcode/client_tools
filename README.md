@@ -2,6 +2,34 @@
 
 This repo contains Sync Computing tools used to feed the required information into the Sync Autotuner for Apache Spark.
 
+# Databricks Instructions
+
+## Step 1: Retrieve your Databricks cluster eventlog
+
+`get_databrick_cluster_eventlog.sh` makes the appropriate Databricks CLI calls and combines the data into a single output file.
+
+### Pre-requisites
+
+The script relies on Databricks CLI to retrieve the cluster events
+
+[Databricks CLI Installation instructions](https://docs.databricks.com/dev-tools/cli/index.html#set-up-the-cli)
+
+### Usage
+```bash
+./get_databricks_cluster_eventlog.sh -i <cluster-id> [-r <results directory>]
+```
+
+### Example
+```bash
+./get_databricks_cluster_eventlog.sh -i 2631-121255-j612dkia -r /path/to/results
+```
+
+If the `-r` flag is excluded then results will automatically be saved to the `databricks_cluster_eventlogs` directory where this script resides.
+
+Instructions for finding a cluster-id through the Databricks console can be found [here](https://docs.databricks.com/workspace/workspace-details.html#cluster-url-and-id). Alternatively, the cluster-id associated with a given Databricks Spark eventlog can be found opening the eventlog in a text editor and searching for the string **spark.databricks.clusterUsageTags.clusterId**.
+
+# EMR Instruction
+
 ## Step 1: Retrieve and paste your cluster info (get_cluster_config.sh)
 
 `get_cluster_config.sh` parses results of AWS CLI 'describe-cluster' and 'list-instances' command into a format accepted by our Prediction UI.
