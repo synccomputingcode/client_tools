@@ -1,0 +1,328 @@
+{
+  "events": [
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659615195995,
+      "type": "CREATING",
+      "details": {
+        "cluster_size": {
+          "autoscale": {
+            "min_workers": 2,
+            "max_workers": 8
+          }
+        },
+        "user": "sean.gorsky@synccomputing.com",
+        "job_run_name": "job-712309320163671-run-6032-cluster-eventlog-test3"
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659615287199,
+      "type": "INIT_SCRIPTS_STARTED",
+      "details": {
+        "init_scripts": {
+          "cluster": [
+            {
+              "dbfs": {
+                "destination": "dbfs:/databricks/scripts/tpcds-install.sh"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659615306153,
+      "type": "INIT_SCRIPTS_FINISHED",
+      "details": {
+        "init_scripts": {
+          "reported_for_node": "0804-121315-k616ski5_10_152_249_20",
+          "cluster": [
+            {
+              "dbfs": {
+                "destination": "dbfs:/databricks/scripts/tpcds-install.sh"
+              },
+              "status": "SUCCEEDED",
+              "execution_duration_seconds": 14
+            }
+          ]
+        }
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659615327423,
+      "type": "RUNNING",
+      "details": {
+        "current_num_workers": 2,
+        "target_num_workers": 2
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659615461727,
+      "type": "RESIZING",
+      "details": {
+        "current_num_workers": 2,
+        "target_num_workers": 6,
+        "cluster_size": {
+          "autoscale": {
+            "min_workers": 2,
+            "max_workers": 8
+          }
+        },
+        "cause": "AUTOSCALE"
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659615687613,
+      "type": "INIT_SCRIPTS_STARTED",
+      "details": {
+        "init_scripts": {
+          "cluster": [
+            {
+              "dbfs": {
+                "destination": "dbfs:/databricks/scripts/tpcds-install.sh"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659615722357,
+      "type": "INIT_SCRIPTS_FINISHED",
+      "details": {
+        "init_scripts": {
+          "reported_for_node": "0804-121315-k616ski5_10_152_254_37",
+          "cluster": [
+            {
+              "dbfs": {
+                "destination": "dbfs:/databricks/scripts/tpcds-install.sh"
+              },
+              "status": "SUCCEEDED",
+              "execution_duration_seconds": 17
+            }
+          ]
+        }
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659615739495,
+      "type": "UPSIZE_COMPLETED",
+      "details": {
+        "current_num_workers": 6,
+        "target_num_workers": 6
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659615806560,
+      "type": "RESIZING",
+      "details": {
+        "current_num_workers": 6,
+        "target_num_workers": 8,
+        "cluster_size": {
+          "autoscale": {
+            "min_workers": 2,
+            "max_workers": 8
+          }
+        },
+        "cause": "AUTOSCALE"
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616032009,
+      "type": "INIT_SCRIPTS_STARTED",
+      "details": {
+        "init_scripts": {
+          "cluster": [
+            {
+              "dbfs": {
+                "destination": "dbfs:/databricks/scripts/tpcds-install.sh"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616066565,
+      "type": "INIT_SCRIPTS_FINISHED",
+      "details": {
+        "init_scripts": {
+          "reported_for_node": "0804-121315-k616ski5_10_152_227_51",
+          "cluster": [
+            {
+              "dbfs": {
+                "destination": "dbfs:/databricks/scripts/tpcds-install.sh"
+              },
+              "status": "SUCCEEDED",
+              "execution_duration_seconds": 18
+            }
+          ]
+        }
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616081412,
+      "type": "UPSIZE_COMPLETED",
+      "details": {
+        "current_num_workers": 8,
+        "target_num_workers": 8
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616121697,
+      "type": "RESIZING",
+      "details": {
+        "current_num_workers": 8,
+        "target_num_workers": 5,
+        "cluster_size": {
+          "autoscale": {
+            "min_workers": 2,
+            "max_workers": 8
+          }
+        },
+        "cause": "AUTOSCALE"
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616156630,
+      "type": "RESIZING",
+      "details": {
+        "current_num_workers": 5,
+        "target_num_workers": 8,
+        "cluster_size": {
+          "autoscale": {
+            "min_workers": 2,
+            "max_workers": 8
+          }
+        },
+        "cause": "AUTOSCALE"
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616317545,
+      "type": "INIT_SCRIPTS_STARTED",
+      "details": {
+        "init_scripts": {
+          "cluster": [
+            {
+              "dbfs": {
+                "destination": "dbfs:/databricks/scripts/tpcds-install.sh"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616334297,
+      "type": "INIT_SCRIPTS_FINISHED",
+      "details": {
+        "init_scripts": {
+          "reported_for_node": "0804-121315-k616ski5_10_152_243_246",
+          "cluster": [
+            {
+              "dbfs": {
+                "destination": "dbfs:/databricks/scripts/tpcds-install.sh"
+              },
+              "status": "SUCCEEDED",
+              "execution_duration_seconds": 11
+            }
+          ]
+        }
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616349439,
+      "type": "UPSIZE_COMPLETED",
+      "details": {
+        "current_num_workers": 8,
+        "target_num_workers": 8
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616391718,
+      "type": "RESIZING",
+      "details": {
+        "current_num_workers": 8,
+        "target_num_workers": 5,
+        "cluster_size": {
+          "autoscale": {
+            "min_workers": 2,
+            "max_workers": 8
+          }
+        },
+        "cause": "AUTOSCALE"
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616431696,
+      "type": "RESIZING",
+      "details": {
+        "current_num_workers": 5,
+        "target_num_workers": 3,
+        "cluster_size": {
+          "autoscale": {
+            "min_workers": 2,
+            "max_workers": 8
+          }
+        },
+        "cause": "AUTOSCALE"
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616451636,
+      "type": "RESIZING",
+      "details": {
+        "current_num_workers": 3,
+        "target_num_workers": 7,
+        "cluster_size": {
+          "autoscale": {
+            "min_workers": 2,
+            "max_workers": 8
+          }
+        },
+        "cause": "AUTOSCALE"
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616529089,
+      "type": "UPSIZE_COMPLETED",
+      "details": {
+        "current_num_workers": 3,
+        "target_num_workers": 7
+      }
+    },
+    {
+      "cluster_id": "0804-121315-k616ski5",
+      "timestamp": 1659616529106,
+      "type": "TERMINATING",
+      "details": {
+        "reason": {
+          "code": "JOB_FINISHED",
+          "type": "SUCCESS"
+        }
+      }
+    }
+  ],
+  "total_count": 22
+}

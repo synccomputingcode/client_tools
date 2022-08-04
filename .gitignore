@@ -123,4 +123,4 @@ dmypy.json
 .pyre/
 
 # Results directory contents
-databricks_cluster_eventlogs/*
+databricks_cluster_eventlogs/*/
