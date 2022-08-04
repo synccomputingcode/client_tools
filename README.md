@@ -28,6 +28,41 @@ If the `-r` flag is excluded then results will automatically be saved to the `da
 
 Instructions for finding a cluster-id through the Databricks console can be found [here](https://docs.databricks.com/workspace/workspace-details.html#cluster-url-and-id). Alternatively, the cluster-id associated with a given Databricks Spark eventlog can be found opening the eventlog in a text editor and searching for the string **spark.databricks.clusterUsageTags.clusterId**.
 
+### Example Output
+```json
+{
+  "events": [
+    {
+      "cluster_id": "2631-121255-j612dkia",
+      "timestamp": 1659615195995,
+      "type": "CREATING",
+      "details": {
+        "cluster_size": {
+          "autoscale": {
+            "min_workers": 2,
+            "max_workers": 8
+          }
+        },
+        "user": "sean.gorsky@synccomputing.com",
+        "job_run_name": "job-1234567-run-1000"
+      }
+    },
+    ...,
+    {
+      "cluster_id": "2631-121255-j612dkia",
+      "timestamp": 1659616529106,
+      "type": "TERMINATING",
+      "details": {
+        "reason": {
+          "code": "JOB_FINISHED",
+          "type": "SUCCESS"
+        }
+      }
+    }
+  ],
+  "total_count": 22
+}    
+```
 # EMR Instruction
 
 ## Step 1: Retrieve and paste your cluster info (get_cluster_config.sh)
