@@ -24,7 +24,7 @@ The script relies on Databricks CLI to retrieve the cluster events
 ./get_databricks_cluster_eventlog.sh -i 2631-121255-j612dkia -r /path/to/results
 ```
 
-If the `-r` flag is excluded then results will automatically be saved to the a directory `databricks_cluster_eventlogs` located in the same directory where this script resides.
+If the `-r` flag is excluded, then a new directory `databricks_cluster_eventlogs` will be created in the same directory as this script and results will be saved there.
 
 Instructions for finding a cluster-id through the Databricks console can be found [here](https://docs.databricks.com/workspace/workspace-details.html#cluster-url-and-id). Alternatively, the cluster-id associated with a given Databricks Spark eventlog can be found opening the eventlog in a text editor and searching for the string **spark.databricks.clusterUsageTags.clusterId**.
 
