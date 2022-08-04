@@ -4,6 +4,7 @@
 
 # Default directory to save results to
 results_dir="$PWD/databricks_cluster_eventlogs"
+mkdir -p $results_dir
 
 function print_usage() {
   cat <<-EOD

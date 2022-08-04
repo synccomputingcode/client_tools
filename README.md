@@ -43,7 +43,7 @@ Instructions for finding a cluster-id through the Databricks console can be foun
             "max_workers": 8
           }
         },
-        "user": "sean.gorsky@synccomputing.com",
+        "user": "user@company.com",
         "job_run_name": "job-1234567-run-1000"
       }
     },
