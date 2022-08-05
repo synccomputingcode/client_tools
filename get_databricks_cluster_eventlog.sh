@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#HOME="$( cd -- "$(dirname "$0")" &>/dev/null; pwd -P )"
-
 # Default directory to save results to
 results_dir="$PWD/databricks_cluster_eventlogs"
 mkdir -p $results_dir
@@ -33,13 +31,12 @@ function eventlog_cli_call {
 }
 
 
+# Make initial databricks call
 call=$(eventlog_cli_call)
-
-
 events=$(jq '.events' <<< $call)
 total_count=$(jq '.total_count' <<< $call)
 
-# Repeat databricks call until there are no next pages
+# Repeat databricks call until there's no "next_page"
 while $(jq 'has("next_page")' <<< $call)
 do
     offset=$(jq '.next_page.offset' <<< $call)
