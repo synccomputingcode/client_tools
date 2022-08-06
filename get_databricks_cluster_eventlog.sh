@@ -1,17 +1,18 @@
 #!/bin/bash
 
 # Default directory to save results to
-results_dir="$PWD/databricks_cluster_eventlogs"
+SCRIPT_DIR="$(dirname "$0")"
+results_dir="$SCRIPT_DIR/databricks_cluster_eventlogs"
 mkdir -p $results_dir
 
 function print_usage() {
   cat <<-EOD
-	Usage: $0 -c <clusterId> [-r <results directory>]
-	Options:
-	  -c <cluster ID>  Databricks cluster ID
-	  -r <results directory>  directory in which to save cluster eventlog
-	  -h                      show this helpful message and exit
-	EOD
+  Usage: $0 -c <clusterId> [-r <results directory>]
+  Options:
+  -c <cluster ID>  Databricks cluster ID
+  -r <results directory>  directory in which to save cluster eventlog
+  -h                      show this helpful message and exit
+EOD
 }
 
 while getopts c:r:h: flag
@@ -32,16 +33,16 @@ function eventlog_cli_call {
 
 
 # Make initial databricks call
-call=$(eventlog_cli_call)
-events=$(jq '.events' <<< $call)
-total_count=$(jq '.total_count' <<< $call)
+call="$(eventlog_cli_call)"
+events="$(jq '.events' <<< "$call")"
+total_count=$(jq '.total_count' <<< "$call")
 
 # Repeat databricks call until there's no "next_page"
-while $(jq 'has("next_page")' <<< $call)
+while $(jq 'has("next_page")' <<< "$call")
 do
-    offset=$(jq '.next_page.offset' <<< $call)
-    call=$(eventlog_cli_call)
-    new_events=$(jq '.events' <<<$call)
+    offset=$(jq '.next_page.offset' <<< "$call")
+    call="$(eventlog_cli_call)"
+    new_events="$(jq '.events' <<< "$call")"
 
     # Append the new_events onto the events list
     events=$(jq --argjson x "$events" --argjson y "$new_events" -n '$x + $y')
