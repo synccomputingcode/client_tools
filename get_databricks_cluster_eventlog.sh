@@ -32,6 +32,7 @@ TMP=${clusterid:?"Argument -c is required. Run script with -h option for help."}
 if ! command -v databricks &> /dev/null
 then
     echo "Databricks CLI could not be found. Please install and configure before running script."
+    exit 1
 fi
 
 offset=0
