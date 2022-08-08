@@ -28,16 +28,18 @@ done
 # Vadidates the existence of -c argument
 TMP=${clusterid:?"Argument -c is required. Run script with -h option for help."}
 
+# Validates databricks CLI installation
+if ! command -v databricks &> /dev/null
+then
+    echo "Databricks CLI could not be found. Please install and configure before running script."
+fi
+
 offset=0
 function eventlog_cli_call {
     databricks clusters events --cluster-id $clusterid --output JSON --order ASC --offset $offset
 }
 
-# Check for databricks CLI installation
-if ! command -v databricks &> /dev/null
-then
-    echo "Databricks CLI could not be found. Please install and configure before running script."
-fi
+
 
 # Make initial databricks call
 call="$(eventlog_cli_call)"
