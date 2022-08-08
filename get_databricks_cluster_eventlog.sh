@@ -15,7 +15,7 @@ function print_usage() {
 EOD
 }
 
-while getopts c:r:h: flag
+while getopts c:r:h flag
 do
     case "${flag}" in
         c) clusterid="$OPTARG";;
@@ -25,6 +25,8 @@ do
     esac
 done
 
+# Vadidates the existence of -c argument
+TMP=${clusterid:?"Argument -c is required. Run script with -h option for help."}
 
 offset=0
 function eventlog_cli_call {
