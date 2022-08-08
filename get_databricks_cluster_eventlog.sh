@@ -6,12 +6,12 @@ results_dir="$SCRIPT_DIR/databricks_cluster_eventlogs"
 mkdir -p $results_dir
 
 function print_usage() {
-  cat <<-EOD
+  cat << EOD
   Usage: $0 -c <clusterId> [-r <results directory>]
   Options:
-  -c <cluster ID>  Databricks cluster ID
-  -r <results directory>  directory in which to save cluster eventlog
-  -h                      show this helpful message and exit
+  -c <cluster ID>         (required) Databricks cluster ID
+  -r <results directory>  Directory in which to save cluster eventlog
+  -h                      Show this helpful message and exit
 EOD
 }
 
