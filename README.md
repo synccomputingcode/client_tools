@@ -58,6 +58,8 @@ The script relies on AWS CLI to retreive the data.
 
 # Databricks Tools
 
+These tools are not currently necessary to run the Autotuner for Databricks eventlogs.
+
 ## Retrieving your Databricks cluster eventlog
 
 `get_databrick_cluster_eventlog.sh` makes the appropriate Databricks CLI calls and combines the data into a single output file.
