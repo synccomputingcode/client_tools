@@ -2,6 +2,9 @@
 
 This repo contains Sync Computing tools used to feed the required information into the Sync Autotuner for Apache Spark.
 
+
+# EMR Instruction
+
 ## Step 1: Retrieve and paste your cluster info (get_cluster_config.sh)
 
 `get_cluster_config.sh` parses results of AWS CLI 'describe-cluster' and 'list-instances' command into a format accepted by our Prediction UI.
@@ -52,3 +55,67 @@ The script relies on AWS CLI to retreive the data.
 4.  A new tab should open up with the Spark history server. It may take a minute to load. Click the download button under the event log column to download the Spark event log. Upload this log into the Autotuner in step #2.
 <img src="https://user-images.githubusercontent.com/59929718/147901014-2c111ad3-3a74-4786-971c-880e578c9257.png" width="50%" height="50%">
 
+
+# Databricks Tools
+
+These tools are not currently necessary to run the Autotuner for Databricks eventlogs.
+
+## Retrieving your Databricks cluster eventlog
+
+`get_databrick_cluster_eventlog.sh` makes the appropriate Databricks CLI calls and combines the data into a single output file.
+
+### Pre-requisites
+
+The script relies on Databricks CLI to retrieve the cluster events
+
+[Databricks CLI Installation instructions](https://docs.databricks.com/dev-tools/cli/index.html#set-up-the-cli)
+
+### Usage
+```bash
+./get_databricks_cluster_eventlog.sh -i <cluster-id> [-r <results directory>]
+```
+
+### Example
+```bash
+./get_databricks_cluster_eventlog.sh -i 2631-121255-j612dkia -r /path/to/results
+```
+
+If the `-r` flag is excluded, then a new directory `databricks_cluster_eventlogs` will be created in the same directory as this script and results will be saved there.
+
+Instructions for finding a cluster-id through the Databricks console can be found [here](https://docs.databricks.com/workspace/workspace-details.html#cluster-url-and-id). Alternatively, the cluster-id associated with a given Databricks Spark eventlog can be found opening the eventlog in a text editor and searching for the string **spark.databricks.clusterUsageTags.clusterId**.
+
+### Example Output
+```json
+{
+  "events": [
+    {
+      "cluster_id": "2631-121255-j612dkia",
+      "timestamp": 1659615195995,
+      "type": "CREATING",
+      "details": {
+        "cluster_size": {
+          "autoscale": {
+            "min_workers": 2,
+            "max_workers": 8
+          }
+        },
+        "user": "user@company.com",
+        "job_run_name": "job-1234567-run-1000"
+      }
+    },
+    ...,
+    {
+      "cluster_id": "2631-121255-j612dkia",
+      "timestamp": 1659616529106,
+      "type": "TERMINATING",
+      "details": {
+        "reason": {
+          "code": "JOB_FINISHED",
+          "type": "SUCCESS"
+        }
+      }
+    }
+  ],
+  "total_count": 22
+}    
+```
