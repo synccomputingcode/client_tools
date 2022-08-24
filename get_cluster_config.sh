@@ -55,8 +55,7 @@ verify_aws_cli_call $?
 LIST_STEPS=$(aws emr list-steps --cluster-id ${CLUSTER_ID} --region ${REGION} --output json)
 verify_aws_cli_call $?
 
-FORMAT='{"describe_cluster": %s, "list_instances": %s, "list_steps": %s, "region": "%s"}\n'
-OUTPUT=$(printf "$FORMAT" "$DESCRIBE_CLUSTER" "$LIST_INSTANCES" "$LIST_STEPS" "$REGION")
+OUTPUT="{$(echo $DESCRIBE_CLUSTER | awk '{print substr($0,2,length($0)-2)}'),$(echo $LIST_INSTANCES | awk '{print substr($0,2,length($0)-2)}'),$(echo $LIST_STEPS | awk '{print substr($0,2,length($0)-2)}'), \"Region\":\"${REGION}\"}"
 
 
 jq --version >/dev/null 2>&1
