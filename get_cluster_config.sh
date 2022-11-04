@@ -16,6 +16,12 @@ function prereqs {
   fi
 }
 
+function verify_aws_cli_call {
+  if [[ $? -ne 0 ]]; then
+    exit 1
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   key="$1"
 
@@ -40,26 +46,16 @@ prereqs
 [[ -z "$CLUSTER_ID" ]] && usage "Cluster ID is required"
 
 
-CLUSTER_TYPE=$(aws emr describe-cluster --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Cluster.InstanceCollectionType')
+DESCRIBE_CLUSTER=$(aws emr describe-cluster --cluster-id ${CLUSTER_ID} --region ${REGION} --output json)
+verify_aws_cli_call $?
 
+LIST_INSTANCES=$(aws emr list-instances --cluster-id ${CLUSTER_ID} --region ${REGION} --output json)
+verify_aws_cli_call $?
 
-RESPONSE=""
-LIST_INSTANCES=""
+LIST_STEPS=$(aws emr list-steps --cluster-id ${CLUSTER_ID} --region ${REGION} --output json)
+verify_aws_cli_call $?
 
-if [[ $CLUSTER_TYPE == '"INSTANCE_GROUP"' ]];
-then
-    # UNIFORM
-    RESPONSE=$(aws emr describe-cluster --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Cluster.{ID: Id, Timeline: Status.Timeline, AvailabilityZone: Ec2InstanceAttributes.Ec2AvailabilityZone, InstanceCollectionType: InstanceCollectionType, InstanceGroups: InstanceGroups[*].{InstanceGroupType: InstanceGroupType, Market: Market, InstanceType: InstanceType, RequestedInstanceCount: RequestedInstanceCount, VolumeSpecification: EbsBlockDevices[*].{SizeInGB: VolumeSpecification.SizeInGB}}}')
-    JSON='{"cluster": %s, "region": "%s"}\n'
-    OUTPUT=$(printf "$JSON" "$RESPONSE" "$REGION")
-
-else
-    # FLEET
-    RESPONSE=$(aws emr describe-cluster --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Cluster.{ID: Id, Timeline: Status.Timeline, AvailabilityZone: Ec2InstanceAttributes.Ec2AvailabilityZone, InstanceCollectionType: InstanceCollectionType, InstanceFleets: InstanceFleets[*].{FleetId: Id, InstanceFleetType: InstanceFleetType, TargetOnDemandCapacity: TargetOnDemandCapacity, TargetSpotCapacity: TargetSpotCapacity, InstanceTypeSpecifications: InstanceTypeSpecifications[*].{InstanceType: InstanceType, VolumeSpecification: EbsBlockDevices[*].{SizeInGB: VolumeSpecification.SizeInGB}}}}')
-    LIST_INSTANCES=$(aws emr list-instances --cluster-id ${CLUSTER_ID} --region ${REGION} --output json --query 'Instances[*].{Id: Id, InstanceFleetId: InstanceFleetId, Market: Market, InstanceType: InstanceType, Timeline: Status.Timeline}')
-    JSON='{"cluster": %s, "list-instances": %s, "region": "%s"}\n'
-    OUTPUT=$(printf "$JSON" "$RESPONSE" "$LIST_INSTANCES" "$REGION")
-fi
+OUTPUT="{$(echo $DESCRIBE_CLUSTER | awk '{print substr($0,2,length($0)-2)}'),$(echo $LIST_INSTANCES | awk '{print substr($0,2,length($0)-2)}'),$(echo $LIST_STEPS | awk '{print substr($0,2,length($0)-2)}'), \"Region\":\"${REGION}\"}"
 
 
 jq --version >/dev/null 2>&1
@@ -69,6 +65,3 @@ if [[ $? -ne 0 ]]; then
 else
   echo $OUTPUT | jq '.'
 fi
-
-
-
