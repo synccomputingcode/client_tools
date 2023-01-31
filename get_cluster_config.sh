@@ -1,4 +1,6 @@
 #!/bin/bash
+set -f
+
 function usage {
   echo $1
   echo "USAGE: emr_clusterConf.sh -i <cluster-id> -r <region>"
