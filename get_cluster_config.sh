@@ -51,7 +51,9 @@ prereqs
 DESCRIBE_CLUSTER=$(aws emr describe-cluster --cluster-id ${CLUSTER_ID} --region ${REGION} --output json)
 verify_aws_cli_call $?
 
-LIST_INSTANCES=$(aws emr list-instances --cluster-id ${CLUSTER_ID} --region ${REGION} --output json)
+# To avoid needing to paginate, and since we want all of the instances anyway, specify --max-items to be the maximum
+#  number of instances that EMR can return anyway - https://awscli.amazonaws.com/v2/documentation/api/latest/reference/emr/list-instances.html#description
+LIST_INSTANCES=$(aws emr list-instances --cluster-id ${CLUSTER_ID} --region ${REGION} --max-items=2000 --output json)
 verify_aws_cli_call $?
 
 LIST_STEPS=$(aws emr list-steps --cluster-id ${CLUSTER_ID} --region ${REGION} --output json)
