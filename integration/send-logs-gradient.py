@@ -28,12 +28,17 @@ dbutils.widgets.text("SYNC_PROJECT_ID", "")
 
 # COMMAND ----------
 
+import logging
 from sync import awsdatabricks
+
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
+
+
 smoke_test = awsdatabricks.get_access_report()
 
 for check in smoke_test:
-    if check.status != "OK":
-        print(check)
+    print(check)
 
 # COMMAND ----------
 
