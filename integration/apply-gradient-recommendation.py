@@ -29,13 +29,13 @@ dbutils.library.restartPython()
 # Collect cluster name
 dbutils.widgets.text("db_workspace_url", "")
 dbutils.widgets.text("job_id", "")
-dbutils.widgets.text("prediction_id", "")
+dbutils.widgets.text("recommendation_id", "")
 
 # COMMAND ----------
 
 import os
 os.environ["DATABRICKS_HOST"] = dbutils.widgets.get("db_workspace_url")
-os.environ["SYNC_PREDICTION_ID"] = dbutils.jobs.taskValues.get(taskKey = "get_sync_recommendation", key = "prediction_id")
+os.environ["SYNC_RECOMMENDATION_ID"] = dbutils.jobs.taskValues.get(taskKey = "get_sync_recommendation", key = "recommendation_id")
 os.environ["DATABRICKS_JOB_ID"] = dbutils.widgets.get("job_id")
 
 os.environ["DATABRICKS_TOKEN"] = dbutils.secrets.get(scope = "demo_workflow", key = "db_token")
@@ -53,7 +53,7 @@ os.environ["SYNC_API_KEY_SECRET"] = dbutils.secrets.get(scope = "demo_workflow",
 import sync
 from sync.api.predictions import *
 
-recommendation = sync.api.predictions.get_prediction(os.getenv("SYNC_PREDICTION_ID"))
+recommendation = sync.api.predictions.get_prediction(os.getenv("SYNC_RECOMMENDATION_ID"))
 recommended_config = recommendation.result.get('solutions').get('recommended')
 display(recommended_config)
 
@@ -73,12 +73,12 @@ w = WorkspaceClient(
 job = w.jobs.get(os.getenv("DATABRICKS_JOB_ID"))
 
 #Current Configuration
-print("Name:" + job.settings.job_clusters[0].job_cluster_key)
-print("Driver:" + job.settings.job_clusters[0].new_cluster.driver_node_type_id)
-print("Worker:" + job.settings.job_clusters[0].new_cluster.node_type_id)
-print(job.settings.job_clusters[0].new_cluster.num_workers)
-print(job.settings.job_clusters[0].new_cluster.autoscale)
-print(job.settings.job_clusters[0].new_cluster.spark_conf)
+print("Name:" + str(job.settings.job_clusters[0].job_cluster_key or ""))
+print("Driver:" + str(job.settings.job_clusters[0].new_cluster.driver_node_type_id or ""))
+print("Worker:" + str(job.settings.job_clusters[0].new_cluster.node_type_id or ""))
+print("Num Workers:" + str(job.settings.job_clusters[0].new_cluster.num_workers or ""))
+print("Autoscale:" + str(job.settings.job_clusters[0].new_cluster.autoscale or ""))
+print("SparkConf:" + str(job.settings.job_clusters[0].new_cluster.spark_conf or ""))
 
 # COMMAND ----------
 
@@ -96,12 +96,12 @@ job.settings.job_clusters[0].new_cluster.spark_conf = recommended_config.get('co
 # COMMAND ----------
 
 #Updated Configuration
-print("Name:" + job.settings.job_clusters[0].job_cluster_key)
-print("Driver:" + job.settings.job_clusters[0].new_cluster.driver_node_type_id)
-print("Worker:" + job.settings.job_clusters[0].new_cluster.node_type_id)
-print(job.settings.job_clusters[0].new_cluster.num_workers)
-print(job.settings.job_clusters[0].new_cluster.autoscale)
-print(job.settings.job_clusters[0].new_cluster.spark_conf)
+print("Name:" + str(job.settings.job_clusters[0].job_cluster_key or ""))
+print("Driver:" + str(job.settings.job_clusters[0].new_cluster.driver_node_type_id or ""))
+print("Worker:" + str(job.settings.job_clusters[0].new_cluster.node_type_id or ""))
+print("Num Workers:" + str(job.settings.job_clusters[0].new_cluster.num_workers or ""))
+print("Autoscale:" + str(job.settings.job_clusters[0].new_cluster.autoscale or ""))
+print("SparkConf:" + str(job.settings.job_clusters[0].new_cluster.spark_conf or ""))
 
 # COMMAND ----------
 

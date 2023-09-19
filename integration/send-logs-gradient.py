@@ -44,4 +44,5 @@ print(recommendation)
 
 # COMMAND ----------
 
-
+print(recommendation.result)
+dbutils.jobs.taskValues.set(key = "recommendation_id", value = recommendation.result)

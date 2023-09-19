@@ -46,7 +46,7 @@ gradient_notebook_path='/Users/' + w.current_user.me().user_name + '/send-logs-g
 gradient_apply_rec_notebook_path='/Users/' + w.current_user.me().user_name + '/apply-gradient-recommendation'
 secret_scope='gradient_' + w.current_user.me().user_name
 generate_clone=True
-add_apply=True
+add_apply=False
 
 #### UPDATE THESE VALUES ####
 
@@ -90,14 +90,15 @@ w.workspace.import_(content=base64.b64encode((file_contents).encode()).decode(),
 
 # COMMAND ----------
 
-url = "https://raw.githubusercontent.com/synccomputingcode/client_tools/main/integration/apply-gradient-recommendation.py"
-file_contents = requests.get(url).text
+if add_apply:
+    url = "https://raw.githubusercontent.com/synccomputingcode/client_tools/main/integration/apply-gradient-recommendation.py"
+    file_contents = requests.get(url).text
 
-w.workspace.import_(content=base64.b64encode((file_contents).encode()).decode(),
-                    format=workspace.ImportFormat.SOURCE,
-                    overwrite=True,
-                    language=workspace.Language.PYTHON,
-                    path=gradient_notebook_path)
+    w.workspace.import_(content=base64.b64encode((file_contents).encode()).decode(),
+                        format=workspace.ImportFormat.SOURCE,
+                        overwrite=True,
+                        language=workspace.Language.PYTHON,
+                        path=gradient_notebook_path)
 
 # COMMAND ----------
 
