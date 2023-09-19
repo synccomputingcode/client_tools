@@ -23,6 +23,7 @@ dbutils.widgets.text("DATABRICKS_RUN_ID", "")
 dbutils.widgets.text("DATABRICKS_COMPUTE_TYPE", "")
 dbutils.widgets.text("DATABRICKS_PLAN_TYPE", "")
 dbutils.widgets.text("SYNC_PROJECT_ID", "")
+dbutils.widgets.text("DATABRICKS_TASK_KEY", "")
 
 # COMMAND ----------
 
@@ -46,7 +47,7 @@ response = awsdatabricks.record_run(
         plan_type=dbutils.widgets.get("DATABRICKS_PLAN_TYPE"),
         compute_type=dbutils.widgets.get("DATABRICKS_COMPUTE_TYPE"),
         project_id=dbutils.widgets.get("SYNC_PROJECT_ID"),
-        exclude_tasks=([dbutils.widgets.get("DATABRICKS_TASK_KEY")] if dbutils.widgets.get("DATABRICKS_TASK_KEY", False) else None),
+        exclude_tasks=([dbutils.widgets.get("DATABRICKS_TASK_KEY")] if dbutils.widgets.get("DATABRICKS_TASK_KEY") else None),
         allow_incomplete_cluster_report=True)
 
 print(response)
