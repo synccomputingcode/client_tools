@@ -19,9 +19,7 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("DATABRICKS_JOB_ID", "")
 dbutils.widgets.text("DATABRICKS_RUN_ID", "")
-dbutils.widgets.text("DATABRICKS_URL", "")
 dbutils.widgets.text("DATABRICKS_COMPUTE_TYPE", "")
 dbutils.widgets.text("DATABRICKS_PLAN_TYPE", "")
 dbutils.widgets.text("SYNC_PROJECT_ID", "")
@@ -35,17 +33,17 @@ from sync import awsdatabricks
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
 
 
-smoke_test = awsdatabricks.get_access_report()
+access_report = awsdatabricks.get_access_report()
 
-for check in smoke_test:
-    print(check)
+for line in access_report:
+    print(line)
 
 # COMMAND ----------
 
 
-recommendation = awsdatabricks.record_run(dbutils.widgets.get("DATABRICKS_PARENT_RUN_ID"), dbutils.widgets.get("DATABRICKS_PLAN_TYPE"), dbutils.widgets.get("DATABRICKS_COMPUTE_TYPE"), project_id=dbutils.widgets.get("SYNC_PROJECT_ID"), exclude_tasks=[dbutils.widgets.get("DATABRICKS_TASK_KEY")], allow_incomplete_cluster_report=True)
+response = awsdatabricks.record_run(dbutils.widgets.get("DATABRICKS_RUN_ID"), dbutils.widgets.get("DATABRICKS_PLAN_TYPE"), dbutils.widgets.get("DATABRICKS_COMPUTE_TYPE"), project_id=dbutils.widgets.get("SYNC_PROJECT_ID"), allow_incomplete_cluster_report=True)
 
-print(recommendation)
+print(response)
 
 # COMMAND ----------
 
