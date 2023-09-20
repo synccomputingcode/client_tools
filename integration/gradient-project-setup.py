@@ -141,15 +141,10 @@ source_job = w.jobs.get(job_id=job_id)
 arn = source_job.settings.job_clusters[0].new_cluster.aws_attributes.instance_profile_arn
 env_vars = source_job.settings.job_clusters[0].new_cluster.spark_env_vars
 if arn is None and env_vars is None:
-    raise Exception("No AWS Permissions specified in instance profile or env variables")
+    print("WARNING: No AWS Permissions specified in instance profile or env variables")
 else:
     print("Verify that your specified AWS role has RW permission to the log location and EC2 Describe Cluster")
 
-if env_vars is not None:
-    if "AWS_ACCESS_KEY_ID" in env_vars.keys() and "AWS_SECRET_ACCESS_KEY" in env_vars.keys():
-        print("Verify that your specified AWS role has RW permission to the log location and EC2 Describe Cluster")
-    else:
-        raise Exception("No AWS Permissions specified in instance profile or env variables")
 
 # COMMAND ----------
 
