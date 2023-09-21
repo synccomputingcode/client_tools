@@ -23,24 +23,26 @@ dbutils.library.restartPython()
 
 # MAGIC %md
 # MAGIC ## Set Credentials and Environment Variables
-
-# COMMAND ----------
-
-# Collect cluster name
-dbutils.widgets.text("db_workspace_url", "")
-dbutils.widgets.text("job_id", "")
-dbutils.widgets.text("recommendation_id", "")
+# MAGIC This uses the secrets setup in the Gradient Auto Setup notebook.
 
 # COMMAND ----------
 
 import os
-os.environ["DATABRICKS_HOST"] = dbutils.widgets.get("db_workspace_url")
-os.environ["SYNC_RECOMMENDATION_ID"] = dbutils.jobs.taskValues.get(taskKey = "get_sync_recommendation", key = "recommendation_id")
-os.environ["DATABRICKS_JOB_ID"] = dbutils.widgets.get("job_id")
 
-os.environ["DATABRICKS_TOKEN"] = dbutils.secrets.get(scope = "demo_workflow", key = "db_token")
-os.environ["SYNC_API_KEY_ID"] = dbutils.secrets.get(scope = "demo_workflow", key = "sync_access_key_id")
-os.environ["SYNC_API_KEY_SECRET"] = dbutils.secrets.get(scope = "demo_workflow", key = "sync_secret_access_key")
+## If you used the Gradient setup notebook, feel free to copy and paste values here
+db_workspace_url='*** Update with your value ***'
+job_id='*** Update with your value ***'
+sync_project_id='*** Update with your value ***'
+sync_access_key_id='*** Update with your value ***'
+sync_secret_access_key='*** Update with your value ***'
+db_token='*** Update with your value ***'
+
+os.environ["DATABRICKS_TOKEN"] = db_token
+os.environ["SYNC_API_KEY_ID"] = sync_access_key_id
+os.environ["SYNC_API_KEY_SECRET"] = sync_secret_access_key
+os.environ["DATABRICKS_HOST"] = db_workspace_url
+os.environ["SYNC_PROJECT_ID"] = sync_project_id
+os.environ["DATABRICKS_JOB_ID"] = job_id
 
 # COMMAND ----------
 
@@ -53,7 +55,8 @@ os.environ["SYNC_API_KEY_SECRET"] = dbutils.secrets.get(scope = "demo_workflow",
 import sync
 from sync.api.predictions import *
 
-recommendation = sync.api.predictions.get_prediction(os.getenv("SYNC_RECOMMENDATION_ID"))
+recommendations = sync.api.predictions.get_predictions(project_id=os.getenv("SYNC_PROJECT_ID"))
+recommendation = sync.api.predictions.get_prediction(recommendations.result[-1]["prediction_id"])
 recommended_config = recommendation.result.get('solutions').get('recommended')
 display(recommended_config)
 
@@ -66,8 +69,11 @@ display(recommended_config)
 # COMMAND ----------
 
 from databricks.sdk import WorkspaceClient
+from databricks.sdk.service import workspace
 
 w = WorkspaceClient(
+  host  = os.getenv("DATABRICKS_HOST"),
+  token = os.getenv("DATABRICKS_TOKEN")
 )
 
 job = w.jobs.get(os.getenv("DATABRICKS_JOB_ID"))
