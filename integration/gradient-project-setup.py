@@ -46,10 +46,8 @@ gradient_notebook_path='/Users/' + w.current_user.me().user_name + '/send-logs-g
 gradient_apply_rec_notebook_path='/Users/' + w.current_user.me().user_name + '/apply-gradient-recommendation'
 secret_scope='gradient_' + w.current_user.me().user_name
 generate_clone=True
-add_apply=False
 
 #### UPDATE THESE VALUES ####
-
 db_workspace_url='*** Update with your value ***'
 job_id='*** Update with your value ***'
 sync_project_id='*** Update with your value ***'
@@ -90,18 +88,6 @@ w.workspace.import_(content=base64.b64encode((file_contents).encode()).decode(),
 
 # COMMAND ----------
 
-if add_apply:
-    url = "https://raw.githubusercontent.com/synccomputingcode/client_tools/main/integration/apply-gradient-recommendation.py"
-    file_contents = requests.get(url).text
-
-    w.workspace.import_(content=base64.b64encode((file_contents).encode()).decode(),
-                        format=workspace.ImportFormat.SOURCE,
-                        overwrite=True,
-                        language=workspace.Language.PYTHON,
-                        path=gradient_notebook_path)
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC ## Create New Secret Key Value Pairs for Credentials
 
@@ -134,22 +120,15 @@ w.secrets.put_secret(scope=scope_name, key='sync_secret_access_key', string_valu
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Clone Job to Create Gradient Enabled Test Job
+
+# COMMAND ----------
+
 from databricks.sdk.service import jobs
 from datetime import datetime
 
 source_job = w.jobs.get(job_id=job_id)
-arn = source_job.settings.job_clusters[0].new_cluster.aws_attributes.instance_profile_arn
-env_vars = source_job.settings.job_clusters[0].new_cluster.spark_env_vars
-if arn is None and env_vars is None:
-    print("WARNING: No AWS Permissions specified in instance profile or env variables")
-else:
-    print("Verify that your specified AWS role has RW permission to the log location and EC2 Describe Cluster")
-
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Clone Job to Create Gradient Enabled Test Job
 
 # COMMAND ----------
 
@@ -219,10 +198,6 @@ print(job.settings.job_clusters[0].new_cluster.spark_env_vars)
 
 # COMMAND ----------
 
-
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC ## Create new single node cluster for Gradient task
 
@@ -282,33 +257,6 @@ job.settings.tasks.append(Task(task_key='get_sync_recommendation',
                                notification_settings=TaskNotificationSettings(alert_on_last_attempt=False, no_alert_for_canceled_runs=False, no_alert_for_skipped_runs=False), pipeline_task=None, python_wheel_task=None, retry_on_timeout=None,
                                spark_jar_task=None, spark_python_task=None, spark_submit_task=None,
                                sql_task=None, timeout_seconds=0))
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Create task to apply recommendation from Gradient (Optional)
-
-# COMMAND ----------
-
-if add_apply:
-    job.settings.tasks.append(Task(task_key='apply_gradient_recommendation',
-                                compute_key=None, condition_task=None,
-                                dbt_task=None, depends_on=[TaskDependency(task_key=job.settings.tasks[-1].task_key, outcome=None)],
-                                description=None, email_notifications=None,
-                                existing_cluster_id=None, job_cluster_key='get_recommendation_cluster',
-                                libraries=None, max_retries=None, min_retry_interval_millis=None,
-                                new_cluster=None, notebook_task=NotebookTask(notebook_path=gradient_apply_rec_notebook_path,
-                                                                                base_parameters={'DATABRICKS_PLAN_TYPE': 'Standard',
-                                                                                                'DATABRICKS_PARENT_RUN_ID': '{{parent_run_id}}',
-                                                                                                'DATABRICKS_RUN_ID': '{{run_id}}',
-                                                                                                'DATABRICKS_TASK_KEY': '{{task_key}}',
-                                                                                                'DATABRICKS_JOB_ID': '{{job_id}}',
-                                                                                                'DATABRICKS_COMPUTE_TYPE': 'Jobs Compute',
-                                                                                                'SYNC_PROJECT_ID': sync_project_id},
-                                                                                source=job.settings.tasks[-1].notebook_task.source), #fix this
-                                notification_settings=TaskNotificationSettings(alert_on_last_attempt=False, no_alert_for_canceled_runs=False, no_alert_for_skipped_runs=False), pipeline_task=None, python_wheel_task=None, retry_on_timeout=None,
-                                spark_jar_task=None, spark_python_task=None, spark_submit_task=None,
-                                sql_task=None, timeout_seconds=0))
 
 # COMMAND ----------
 
