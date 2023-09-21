@@ -41,8 +41,3 @@ for check in smoke_test:
 recommendation = awsdatabricks.record_run(dbutils.widgets.get("DATABRICKS_PARENT_RUN_ID"), dbutils.widgets.get("DATABRICKS_PLAN_TYPE"), dbutils.widgets.get("DATABRICKS_COMPUTE_TYPE"), project_id=dbutils.widgets.get("SYNC_PROJECT_ID"), exclude_tasks=[dbutils.widgets.get("DATABRICKS_TASK_KEY")], allow_incomplete_cluster_report=True)
 
 print(recommendation)
-
-# COMMAND ----------
-
-print(recommendation.result)
-dbutils.jobs.taskValues.set(key = "recommendation_id", value = recommendation.result)
