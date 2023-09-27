@@ -62,8 +62,19 @@ orders_pd = pd.read_excel(
 # calculate sales amount as quantity * unit price
 orders_pd['SalesAmount'] = orders_pd['Quantity'] * orders_pd['UnitPrice']
  
+
+
+# COMMAND ----------
+
+# Create a Spark DataFrame from a pandas DataFrame using Arrow
+orders_df = spark.createDataFrame(orders_pd)
+orders_df.count()
+
+
+# COMMAND ----------
+
 # display first few rows from the dataset
-orders_pd.head(10)
+display(orders_df)
 
 # COMMAND ----------
 
