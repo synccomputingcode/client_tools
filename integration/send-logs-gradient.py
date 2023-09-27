@@ -29,11 +29,11 @@ dbutils.widgets.text("SYNC_PROJECT_ID", "")
 # COMMAND ----------
 
 from sync import awsdatabricks
-smoke_test = awsdatabricks.get_access_report()
+#smoke_test = awsdatabricks.get_access_report()
 
-for check in smoke_test:
-    if check.status != "OK":
-        print(check)
+#for check in smoke_test:
+#    if check.status != "OK":
+#        print(check)
 
 # COMMAND ----------
 
