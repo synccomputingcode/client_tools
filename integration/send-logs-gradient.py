@@ -9,7 +9,7 @@
 # MAGIC   * DATABRICKS_TOKEN: Databricks personal access token
 # MAGIC   * SYNC_API_KEY_ID: Sync API key ID
 # MAGIC   * SYNC_API_KEY_SECRET: Sync API key secret
-# MAGIC * Access to AWS for event logs in S3 and cluster node information is provided by an instance profile or other AWS credentials
+# MAGIC * Access to AWS for event logs in S3 and cluster node information is provided by an instance profile or other AWS credentials (AWS Databricks only)
 # MAGIC
 # MAGIC
 
@@ -28,21 +28,31 @@ dbutils.widgets.text("DATABRICKS_TASK_KEY", "")
 # COMMAND ----------
 
 import logging
-from sync import awsdatabricks
 
+from sync.clients.databricks import get_default_client
+from sync.models import Platform, AccessStatusCode
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
 
+platform = get_default_client()
+if platform is Platform.AWS_DATABRICKS:
+    from sync import awsdatabricks as databricks
+elif platform is Platform.AZURE_DATABRICKS:
+    from sync import azuredatabricks as databricks
+else:
+    raise ValueError(f"Unsupported platform: {platform)}")
 
-access_report = awsdatabricks.get_access_report()
+
+access_report = databricks.get_access_report()
 
 for line in access_report:
     print(line)
 
+assert not any(line.status is AccessStatusCode.RED for line in access_report), "Required access is missing"
+
 # COMMAND ----------
 
-
-response = awsdatabricks.record_run(
+response = databricks.record_run(
         run_id=dbutils.widgets.get("DATABRICKS_RUN_ID") or dbutils.widgets.get("DATABRICKS_PARENT_RUN_ID"),
         plan_type=dbutils.widgets.get("DATABRICKS_PLAN_TYPE"),
         compute_type=dbutils.widgets.get("DATABRICKS_COMPUTE_TYPE"),

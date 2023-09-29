@@ -32,9 +32,15 @@ virtualenv $SYNC_VENV_PATH
 
 pip install https://github.com/synccomputingcode/syncsparkpy/archive/latest.tar.gz
 
+PLATFORM=$(python <<EOD
+from sync.clients.databricks import get_default_client
+print(get_default_client().get_platform().value)
+EOD
+)
+
 if [[ -z $SYNC_PROJECT_ID ]]; then
   SYNC_PROJECT_ID=$(python <<EOD
-from sync.awsdatabricks import get_cluster
+from sync.${PLATFORM/-/} import get_cluster
 from sync.api.projects import get_projects
 
 cluster_response = get_cluster("$DB_CLUSTER_ID")
@@ -53,4 +59,4 @@ if [[ -z $SYNC_PROJECT_ID ]]; then
   exit 1
 fi
 
-sync-cli --debug aws-databricks monitor-cluster $DB_CLUSTER_ID & disown
+sync-cli --debug $PLATFORM monitor-cluster $DB_CLUSTER_ID & disown
