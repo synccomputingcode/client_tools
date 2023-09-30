@@ -34,7 +34,7 @@ from sync.models import Platform, AccessStatusCode
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
 
-platform = get_default_client()
+platform = get_default_client().get_platform()
 if platform is Platform.AWS_DATABRICKS:
     from sync import awsdatabricks as databricks
 elif platform is Platform.AZURE_DATABRICKS:
