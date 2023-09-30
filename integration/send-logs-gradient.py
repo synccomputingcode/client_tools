@@ -40,7 +40,7 @@ if platform is Platform.AWS_DATABRICKS:
 elif platform is Platform.AZURE_DATABRICKS:
     from sync import azuredatabricks as databricks
 else:
-    raise ValueError(f"Unsupported platform: {platform)}")
+    raise ValueError(f"Unsupported platform: {platform}")
 
 
 access_report = databricks.get_access_report()
