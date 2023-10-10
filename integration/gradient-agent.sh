@@ -1,37 +1,62 @@
 #!/bin/bash
 
-date -u +"%Y-%m-%d %H:%M:%S UTC"
-echo "Running on the driver? $DB_IS_DRIVER"
-echo "Driver ip: $DB_DRIVER_IP"
-echo "Sync Project ID: $SYNC_PROJECT_ID"
+echo "$(date -u): Sync init script starting"
 
-if [ ! -z "${SYNC_PROJECT_ID}" ]; then
-    if [ "$DB_IS_DRIVER" = "TRUE" ]; then
-        rm /tmp/start_sync.sh
-        rm -r sync-venv
+REQUIRED_ENV_VARS=(DATABRICKS_HOST DATABRICKS_TOKEN DB_CLUSTER_ID DB_IS_DRIVER)
+SYNC_VENV_PATH=/tmp/sync
 
-        # Create a virtualenv for us to use so that installing the sync-cli doesn't
-        #  impact any Databricks-default or user-installed libraries.
-        virtualenv sync-venv
-        source ./sync-venv/bin/activate
+function print_usage {
+  local remaining_env_vars=(${REQUIRED_ENV_VARS[*]:1})
+  cat <<EOD
+Required environment variables:
+  $(printf "%s\n" ${REQUIRED_ENV_VARS[0]} "${remaining_env_vars[@]/#/  }")
+EOD
+}
 
-        cat <<EOF >> /tmp/start_sync.sh
-#!/bin/bash
+for var in ${REQUIRED_ENV_VARS[*]}; do
+  if [[ -z ${!var} ]]; then
+    >&2 echo "$var is missing"
+    >&2 print_usage
+    exit 1
+  fi
+done
 
-echo "Python location: $(which python)"
-
-echo "Installing Sync CLI..."
-
-echo "$(pip install https://github.com/synccomputingcode/syncsparkpy/archive/latest.tar.gz)"
-
-echo "$(sync-cli --version)"
-
-echo "Monitoring $DB_CLUSTER_ID"
-
-sync-cli aws-databricks monitor-cluster $DB_CLUSTER_ID
-EOF
-
-        chmod a+x /tmp/start_sync.sh
-        /tmp/start_sync.sh & disown
-    fi
+if [[ $DB_IS_DRIVER != TRUE ]]; then
+  echo "Not running on a Databricks cluster driver. Exiting."
+  exit
 fi
+
+virtualenv $SYNC_VENV_PATH
+
+. $SYNC_VENV_PATH/bin/activate
+
+pip install https://github.com/synccomputingcode/syncsparkpy/archive/latest.tar.gz
+
+PLATFORM=$(python <<EOD
+from sync.clients.databricks import get_default_client
+print(get_default_client().get_platform().value)
+EOD
+)
+
+if [[ -z $SYNC_PROJECT_ID ]]; then
+  SYNC_PROJECT_ID=$(python <<EOD
+from sync.${PLATFORM/-/} import get_cluster
+from sync.api.projects import get_projects
+
+cluster_response = get_cluster("$DB_CLUSTER_ID")
+if cluster_response.result:
+  cluster = cluster_response.result
+  if cluster['cluster_source'] == "JOB":
+    project_id = cluster.get('custom_tags', {}).get('sync:project-id')
+    if project_id:
+      print(project_id)
+EOD
+)
+fi
+
+if [[ -z $SYNC_PROJECT_ID ]]; then
+  >&2 echo "No project found for job running on cluster $DB_CLUSTER_ID"
+  exit 1
+fi
+
+sync-cli --debug $PLATFORM monitor-cluster $DB_CLUSTER_ID & disown
