@@ -63,5 +63,3 @@ response = databricks.record_run(
 print(response)
 
 # COMMAND ----------
-
-
