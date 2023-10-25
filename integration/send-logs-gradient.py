@@ -20,6 +20,7 @@
 # COMMAND ----------
 
 dbutils.widgets.text("DATABRICKS_RUN_ID", "")
+dbutils.widgets.text("DATABRICKS_JOB_ID", "")
 dbutils.widgets.text("DATABRICKS_COMPUTE_TYPE", "")
 dbutils.widgets.text("DATABRICKS_PLAN_TYPE", "")
 dbutils.widgets.text("SYNC_PROJECT_ID", "")
@@ -31,6 +32,7 @@ import logging
 
 from sync.clients.databricks import get_default_client
 from sync.models import Platform, AccessStatusCode
+from sync.api import projects
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
 
@@ -52,14 +54,42 @@ assert not any(line.status is AccessStatusCode.RED for line in access_report), "
 
 # COMMAND ----------
 
-response = databricks.record_run(
+response = databricks.create_submission_for_run(
         run_id=dbutils.widgets.get("DATABRICKS_RUN_ID") or dbutils.widgets.get("DATABRICKS_PARENT_RUN_ID"),
         plan_type=dbutils.widgets.get("DATABRICKS_PLAN_TYPE"),
         compute_type=dbutils.widgets.get("DATABRICKS_COMPUTE_TYPE"),
         project_id=dbutils.widgets.get("SYNC_PROJECT_ID"),
         exclude_tasks=([dbutils.widgets.get("DATABRICKS_TASK_KEY")] if dbutils.widgets.get("DATABRICKS_TASK_KEY") else None),
-        allow_incomplete_cluster_report=True)
+        allow_incomplete_cluster_report=True,
+    )
 
-print(response)
+if response.error:
+    raise RuntimeError(str(response.error))
+
+response = projects.get_project(dbutils.widgets.get("SYNC_PROJECT_ID"))
+
+if response.error:
+    raise RuntimeError(str(response.error))
+
+project = response.result
+if project.get("auto_apply_recs"):
+    response = projects.create_project_recommendation(project["id"])
+
+    if response.error:
+        raise RuntimeError(str(response.error))
+
+    recommendation_id = response.result
+
+    response = projects.wait_for_recommendation(project["id"], recommendation_id)
+
+    if response.error:
+        raise RuntimeError(str(response.error))
+
+    response = databricks.apply_project_recommendation(project["id"], dbutils.widgets.get("DATABRICKS_JOB_ID"), recommendation_id)
+
+    if response.error:
+        raise RuntimeError(str(response.error))
+
+print(response.result)
 
 # COMMAND ----------
