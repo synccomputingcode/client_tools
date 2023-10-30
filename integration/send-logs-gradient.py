@@ -66,6 +66,8 @@ response = databricks.create_submission_for_run(
 if response.error:
     raise RuntimeError(str(response.error))
 
+print(response.result)
+
 response = projects.get_project(dbutils.widgets.get("SYNC_PROJECT_ID"))
 
 if response.error:
@@ -85,7 +87,7 @@ if project.get("auto_apply_recs"):
     if response.error:
         raise RuntimeError(str(response.error))
 
-    response = databricks.apply_project_recommendation(project["id"], dbutils.widgets.get("DATABRICKS_JOB_ID"), recommendation_id)
+    response = databricks.apply_project_recommendation(dbutils.widgets.get("DATABRICKS_JOB_ID"), project["id"], recommendation_id)
 
     if response.error:
         raise RuntimeError(str(response.error))
