@@ -46,11 +46,11 @@ def get_run_result_state(run_id):
     else:
         return run_status.value
 
-def submit_test_runs(test_runs):
+def submit_test_runs(job_id, test_runs):
     current_run=1
     while current_run <= test_runs:
         print("Starting run " + str(current_run) + " of " + str(test_runs))
-        run = w.jobs.run_now(job_id=dbutils.widgets.get("DATABRICKS_JOB_ID"))
+        run = w.jobs.run_now(job_id=job_id)
         print("run id:" + str(run.response.run_id))
         termination_state = get_run_result_state(run.response.run_id)
         if termination_state == 'SUCCESS':
@@ -62,5 +62,5 @@ def submit_test_runs(test_runs):
 
 
 
-submit_test_runs(int(dbutils.widgets.get("TRAINING_RUNS")))
+submit_test_runs(job_id=dbutils.widgets.get("DATABRICKS_JOB_ID"), training_runs=int(dbutils.widgets.get("TRAINING_RUNS")))
 
