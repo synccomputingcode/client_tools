@@ -14,10 +14,10 @@
 # COMMAND ----------
 
 # Update these values
-DATABRICKS_HOST = dbutils.secrets.get(scope="Sync Computing | 4fb27cc4-7e2b-45d6-82bc-0b3cc9b6025f", key="DATABRICKS_HOST")
-DATABRICKS_TOKEN = dbutils.secrets.get(scope="Sync Computing | 4fb27cc4-7e2b-45d6-82bc-0b3cc9b6025f", key="DATABRICKS_TOKEN")
-DATABRICKS_JOB_ID = 227554421094496
-TRAINING_RUNS = 2
+DATABRICKS_HOST = <your-host-address>
+DATABRICKS_TOKEN = <your-token>
+DATABRICKS_JOB_ID = <your-job-id>
+TRAINING_RUNS = 10
 
 # COMMAND ----------
 
