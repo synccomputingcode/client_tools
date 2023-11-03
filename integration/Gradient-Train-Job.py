@@ -14,10 +14,10 @@
 # COMMAND ----------
 
 # Update these values
-DATABRICKS_HOST = dbutils.secrets.get(scope="Sync Computing | 45g7cc4-7e2b-45d6-92bc-0bg229b6025f", key="DATABRICKS_HOST")
-DATABRICKS_TOKEN = dbutils.secrets.get(scope="Sync Computing | 45g7cc4-7e2b-45d6-92bc-0bg229b6025f", key="DATABRICKS_TOKEN")
+DATABRICKS_HOST = dbutils.secrets.get(scope="Sync Computing | 4fb27cc4-7e2b-45d6-82bc-0b3cc9b6025f", key="DATABRICKS_HOST")
+DATABRICKS_TOKEN = dbutils.secrets.get(scope="Sync Computing | 4fb27cc4-7e2b-45d6-82bc-0b3cc9b6025f", key="DATABRICKS_TOKEN")
 DATABRICKS_JOB_ID = 227554421094496
-TRAINING_RUNS = 3
+TRAINING_RUNS = 2
 
 # COMMAND ----------
 
@@ -33,20 +33,52 @@ import time
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service import workspace
 from databricks.sdk.service import jobs
+from databricks.sdk.service.compute import AutoScale
 
 w = WorkspaceClient(
   host  = DATABRICKS_HOST,
   token = DATABRICKS_TOKEN
 )
 
+job = w.jobs.get(DATABRICKS_JOB_ID)
+
+#Current Configuration
+print("Name:" + str(job.settings.job_clusters[0].job_cluster_key or ""))
+print("Num Workers:" + str(job.settings.job_clusters[0].new_cluster.num_workers or ""))
+print("Autoscale:" + str(job.settings.job_clusters[0].new_cluster.autoscale or ""))
+print("Original First On Demand:" + str(job.settings.job_clusters[0].new_cluster.aws_attributes.first_on_demand or ""))
+
+if job.settings.job_clusters[0].new_cluster.autoscale is not None:
+    autoscale = job.settings.job_clusters[0].new_cluster.autoscale.max_workers
+else:
+    autoscale = 0
+
+orgiginal_ondemand = job.settings.job_clusters[0].new_cluster.aws_attributes.first_on_demand or 0
+ondemand = (job.settings.job_clusters[0].new_cluster.num_workers or 0) + autoscale + 1
+print("First_on_demand:" + str(ondemand or ""))
+
+job.settings.job_clusters[0].new_cluster.aws_attributes.first_on_demand = ondemand
+
+w.jobs.update(job_id=DATABRICKS_JOB_ID,new_settings=job.settings)
+
+print("Num Workers:" + str(job.settings.job_clusters[0].new_cluster.num_workers or ""))
+print("Autoscale:" + str(job.settings.job_clusters[0].new_cluster.autoscale or ""))
+print("New First On Demand:" + str(job.settings.job_clusters[0].new_cluster.aws_attributes.first_on_demand or ""))
+
 def get_run_result_state(run_id):
-    run_status = w.jobs.get_run(run_id=run_id).state.result_state
-    while (run_status is None):
+    run_state = w.jobs.get_run(run_id=run_id).state.life_cycle_state
+    result_state = w.jobs.get_run(run_id=run_id).state.result_state
+
+    while (run_state.value not in ("TERMINATED", "SKIPPED", "INTERNAL_ERROR")):
         print("...")
-        time.sleep(60)
-        run_status = w.jobs.get_run(run_id=run_id).state.result_state
+        time.sleep(30)
+        result_state = w.jobs.get_run(run_id=run_id).state.result_state
+        run_state = w.jobs.get_run(run_id=run_id).state.life_cycle_state
     else:
-        return run_status.value
+        if (result_state is None):
+            return "UNSUCCESSFUL"
+        else:
+            return result_state.value
 
 def submit_test_runs(job_id, training_runs):
     current_run=1
@@ -63,4 +95,12 @@ def submit_test_runs(job_id, training_runs):
             current_run = training_runs + 1
 
 submit_test_runs(job_id=DATABRICKS_JOB_ID, training_runs=TRAINING_RUNS)
+
+job.settings.job_clusters[0].new_cluster.aws_attributes.first_on_demand = orgiginal_ondemand
+w.jobs.update(job_id=DATABRICKS_JOB_ID,new_settings=job.settings)
+print("Restored First On Demand:" + str(job.settings.job_clusters[0].new_cluster.aws_attributes.first_on_demand or ""))
+
+
+# COMMAND ----------
+
 
