@@ -14,10 +14,10 @@
 # COMMAND ----------
 
 # Update these values
-DATABRICKS_HOST = <your-host-address>
-DATABRICKS_TOKEN = <your-token>
-DATABRICKS_JOB_ID = <your-job-id>
-TRAINING_RUNS = 10
+DATABRICKS_HOST = 'https://dbc-d68756ca-1d00.cloud.databricks.com/' #replace with your host address
+DATABRICKS_TOKEN = 'dapid09843d54787654bcf6a5da5765421d00' #replace with your token
+DATABRICKS_JOB_ID = 693675234770819 #replace with your job-id
+TRAINING_RUNS = 10 #recommend at least 10
 
 # COMMAND ----------
 
