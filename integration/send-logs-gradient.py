@@ -15,11 +15,12 @@
 
 # COMMAND ----------
 
-# MAGIC %pip install https://github.com/synccomputingcode/syncsparkpy/archive/latest.tar.gz
+# MAGIC %pip install https://github.com/synccomputingcode/syncsparkpy/archive/PROD-1343-record-run.tar.gz
 
 # COMMAND ----------
 
 dbutils.widgets.text("DATABRICKS_RUN_ID", "")
+dbutils.widgets.text("DATABRICKS_JOB_ID", "")
 dbutils.widgets.text("DATABRICKS_COMPUTE_TYPE", "")
 dbutils.widgets.text("DATABRICKS_PLAN_TYPE", "")
 dbutils.widgets.text("SYNC_PROJECT_ID", "")
@@ -52,14 +53,19 @@ assert not any(line.status is AccessStatusCode.RED for line in access_report), "
 
 # COMMAND ----------
 
-response = databricks.record_run(
+response = databricks.handle_successful_job_run(
+        job_id=dbutils.widgets.get("DATABRICKS_JOB_ID"),
         run_id=dbutils.widgets.get("DATABRICKS_RUN_ID") or dbutils.widgets.get("DATABRICKS_PARENT_RUN_ID"),
         plan_type=dbutils.widgets.get("DATABRICKS_PLAN_TYPE"),
         compute_type=dbutils.widgets.get("DATABRICKS_COMPUTE_TYPE"),
         project_id=dbutils.widgets.get("SYNC_PROJECT_ID"),
+        allow_incomplete_cluster_report=True,
         exclude_tasks=([dbutils.widgets.get("DATABRICKS_TASK_KEY")] if dbutils.widgets.get("DATABRICKS_TASK_KEY") else None),
-        allow_incomplete_cluster_report=True)
+    )
 
-print(response)
+if response.error:
+    raise RuntimeError(str(response.error))
+
+print(response.result)
 
 # COMMAND ----------
