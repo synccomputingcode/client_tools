@@ -15,7 +15,7 @@
 
 # COMMAND ----------
 
-# MAGIC %pip install https://github.com/synccomputingcode/syncsparkpy/archive/PROD-1343-record-run.tar.gz
+# MAGIC %pip install https://github.com/synccomputingcode/syncsparkpy/archive/latest.tar.gz
 
 # COMMAND ----------
 
