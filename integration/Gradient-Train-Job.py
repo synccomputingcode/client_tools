@@ -117,7 +117,7 @@ def submit_test_runs(submit_job_id, training_runs):
         if termination_state == 'SUCCESS':
             print("Completed")
             current_run = current_run + 1
-            wait_sec=1200
+            wait_sec=1800
             print(f"Waiting for log submission and rec generation: {wait_sec} sec")
             time.sleep(wait_sec) #need to wait to allow logs to be submitted and rec to be generated
         else:
