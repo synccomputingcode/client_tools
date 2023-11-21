@@ -156,17 +156,23 @@ def wait_for_recommendation(starting_recommendation_id):
     start_time = datetime.now(timezone.utc)
     print("Start Time:", start_time)
     current_recommendation_id = get_custom_tag_value("sync:recommendation-id")
-    #when the recommendation-id tag has been changed in the databricks job, the recommendation is complete
+
+    starting_recommendation_submission_id = None
+    current_recommendation_submission_id = None
+
     if project_id := get_custom_tag_value("sync:project-id"):
-        current_recommendation_submission_id = sync_client.get_project_recommendation(project_id, current_recommendation_id)["result"]["context"]["latest_submission_id"]
-        starting_recommendation_submission_id = sync_client.get_project_recommendation(project_id, starting_recommendation_id)["result"]["context"]["latest_submission_id"]
+        if starting_recommendation_id:
+            starting_recommendation_submission_id = sync_client.get_project_recommendation(project_id, starting_recommendation_id)["result"]["context"]["latest_submission_id"]
+        if current_recommendation_id:
+            current_recommendation_submission_id = sync_client.get_project_recommendation(project_id, current_recommendation_id)["result"]["context"]["latest_submission_id"]
     
     while current_recommendation_submission_id == starting_recommendation_submission_id:
         time.sleep(30)
         current_reccomendation_id = get_custom_tag_value("sync:recommendation-id")
 
         if project_id := get_custom_tag_value("sync:project-id"):
-            current_recommendation_submission_id = sync_client.get_project_recommendation(project_id, current_reccomendation_id)["result"]["context"]["latest_submission_id"]
+            if current_recommendation_id:
+                current_recommendation_submission_id = sync_client.get_project_recommendation(project_id, current_reccomendation_id)["result"]["context"]["latest_submission_id"]
             #check if a new recommendation has been created, and provide a 5 min leeway period to update the databricks job
             if recommendations := sync_client.get_project_recommendations(get_custom_tag_value("sync:project-id"))["result"]:
                 latest_recommendation = recommendations[0]
