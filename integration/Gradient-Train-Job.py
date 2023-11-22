@@ -19,7 +19,7 @@ dbutils.widgets.dropdown("Bypass Webhook", "False", ["True", "False"])
 # MAGIC  * The Gradient Webhook has been configured
 # MAGIC  * The Databricks Job has been Gradient enabled
 # MAGIC
-# MAGIC This job will confirgure all runs to execute using ON DEMAND nodes only.  The orginal settings will be restored after training is complete.
+# MAGIC This job will configure all runs to execute using ON DEMAND nodes only.  The orginal settings will be restored after training is complete.
 # MAGIC
 
 # COMMAND ----------
