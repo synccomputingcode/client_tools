@@ -154,7 +154,6 @@ def run_job(run_job_id):
 def wait_for_recommendation(starting_recommendation_id):
     print(f"Waiting for log submission and rec generation and application")
     start_time = datetime.now(timezone.utc)
-    print("Start Time:", start_time)
     current_recommendation_id = get_custom_tag_value("sync:recommendation-id")
 
     starting_recommendation_submission_id = None
@@ -198,7 +197,6 @@ def submit_test_runs(submit_job_id, training_runs):
             print("Completed")
             current_run = current_run + 1
             wait_for_recommendation(current_recommendation_id)
-            print("End Time:", datetime.now(timezone.utc))
         else:
             print("Unsuccessful run. Training Ended")
             current_run = training_runs + 1
