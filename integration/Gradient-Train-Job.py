@@ -52,6 +52,7 @@ from sync.models import Platform, AccessStatusCode
 import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
+logging.getLogger("py4j").setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
 platform = get_default_client().get_platform()
@@ -150,7 +151,7 @@ def submit_test_runs(submit_job_id, training_runs):
         if termination_state == 'SUCCESS':
             print("Completed")
             current_run = current_run + 1
-            wait_sec=1200
+            wait_sec=1800
             print(f"Waiting for log submission and rec generation: {wait_sec} sec")
             time.sleep(wait_sec) #need to wait to allow logs to be submitted and rec to be generated
         else:
