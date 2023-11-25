@@ -3,7 +3,6 @@
 dbutils.widgets.text("Databricks Token", "")
 dbutils.widgets.text("Databricks Host", "")
 dbutils.widgets.text("Databricks Job ID", "")
-dbutils.widgets.dropdown("Databricks Plan", "Premium", ["Standard", "Premium", "Enterprise"])
 
 dbutils.widgets.text("Sync API Key ID", "")
 dbutils.widgets.text("Sync API Key Secret", "")
@@ -25,7 +24,7 @@ dbutils.widgets.dropdown("Bypass Webhook", "False", ["True", "False"])
 # COMMAND ----------
 
 # MAGIC %pip install -I https://github.com/synccomputingcode/syncsparkpy/archive/latest.tar.gz
-# MAGIC %pip install databricks-cli
+# MAGIC
 
 # COMMAND ----------
 
@@ -35,27 +34,38 @@ dbutils.library.restartPython()
 
 import os
 DATABRICKS_JOB_ID = dbutils.widgets.get("Databricks Job ID")
-DATABRICKS_PLAN = dbutils.widgets.get("Databricks Plan")
 TRAINING_RUNS = int(dbutils.widgets.get("Training Runs"))
 BYPASS_WEBHOOK = eval(dbutils.widgets.get("Bypass Webhook"))
 os.environ["DATABRICKS_TOKEN"] =  dbutils.widgets.get("Databricks Token")
 os.environ["SYNC_API_KEY_ID"] = dbutils.widgets.get("Sync API Key ID")
 os.environ["SYNC_API_KEY_SECRET"] = dbutils.widgets.get("Sync API Key Secret")
 os.environ["DATABRICKS_HOST"] = dbutils.widgets.get("Databricks Host").rstrip('\/')
-print(dbutils.widgets.get("Databricks Host").rstrip('\/'))
+
+
+print(f"DATABRICKS_JOB_ID: {DATABRICKS_JOB_ID}")
+print(f"TRAINING_RUNS: {TRAINING_RUNS}")
+print(f"BYPASS_WEBHOOK: {BYPASS_WEBHOOK}")
+print(f"DATABRICKS_HOST: {os.getenv('DATABRICKS_HOST')}")
 
 
 # COMMAND ----------
 
-from sync.clients.databricks import get_default_client
 from sync.models import Platform, AccessStatusCode
+from sync._databricks import get_recommendation_job
+from sync.clients import sync, databricks
+from sync.api import projects
+import time
+
 import logging
+
+sync_client = sync.get_default_client()
+sync_databricks_client = databricks.get_default_client()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
 logging.getLogger("py4j").setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
-platform = get_default_client().get_platform()
+platform = sync_databricks_client.get_platform()
 if platform is Platform.AWS_DATABRICKS:
     from sync import awsdatabricks as sync_databricks
 elif platform is Platform.AZURE_DATABRICKS:
@@ -73,20 +83,85 @@ assert not any(line.status is AccessStatusCode.RED for line in access_report), "
 
 # COMMAND ----------
 
+
+def get_cluster_for_job(job: dict | None) -> dict:
+
+    if job is None:
+        job = sync_databricks_client.get_job(DATABRICKS_JOB_ID)
+
+    job_settings = job["settings"]
+
+    cluster = None
+    if job_settings["format"] == "SINGLE_TASK":
+        cluster = job_settings["new_cluster"]
+    elif job_settings["format"] == "MULTI_TASK":
+
+        task = job_settings["tasks"][0]
+        if new_task_cluster := task.get("new_cluster"):
+            cluster = new_task_cluster
+        elif job_cluster_key := task.get("job_cluster_key"):
+            for job_cluster in job_settings["job_clusters"]:
+                if job_cluster["job_cluster_key"] == job_cluster_key:
+                    cluster = job_cluster["new_cluster"]
+                    break
+
+    if cluster:
+        return cluster
+    else:
+        raise ValueError("Could not identify a cluster for this job")
+
+def get_tag_for_job(job: dict, tag_key: str) -> str | None:
+    cluster = get_cluster_for_job(job)
+    return cluster["custom_tags"].get(tag_key)
+    
+
+def validate_job():  
+    logger.info("Validating Databricks Job")
+    job = sync_databricks_client.get_job(DATABRICKS_JOB_ID)
+    job_settings = job["settings"]
+
+    # 1. Check that this is a single-cluster job
+    logger.info("Checking that job only has one cluster")
+    if job_settings.get("format") == "MULTI_TASK":
+        num_clusters = 0
+        job_cluster_key_set = set({})
+        for task in job_settings["tasks"]:
+            if job_cluster_key := task.get("job_cluster_key"):
+                if job_cluster_key not in job_cluster_key_set:
+                    job_cluster_key_set.add(job_cluster_key)
+                    num_clusters += 1
+            elif task.get("new_cluster"):
+                num_clusters +=1
+
+        assert num_clusters==1,f"This notebook supports jobs with 1 cluster, but detected {num_clusters} clusters"
+
+    # 2. Check for project_id and auto_apply_recs
+    logger.info("Checking for project-id and auto-apply settings")
+    if project_id := get_tag_for_job(job, "sync:project-id"):
+        logger.info(f"Found project-id: {project_id}")
+        if not projects.get_project(project_id).result["auto_apply_recs"]:
+            raise RecommendationError("Recommendations will not be created for this project because 'auto_apply_recs' is False")
+    else:
+        raise ValueError("Job has not been properly onboarded. Cluster tag 'sync:project-id' is missing")
+
+    # 3. Check that logs are being sent to dbfs
+    cluster = get_cluster_for_job(job)
+    if not cluster.get("cluster_log_conf", {}).get("dbfs"):
+        raise ValueError(f"Cluster logs must be sent to dbfs. Current setting: {cluster.get('cluster_log_conf')}")
+
+validate_job()
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ##Configure all training runs to execute using ON DEMAND clusters
 
 # COMMAND ----------
 
-from sync.clients import databricks
-from sync.api import projects
-import orjson
-
-databricks_client = databricks.get_default_client()
-job = databricks_client.get_job(DATABRICKS_JOB_ID)
+job = sync_databricks_client.get_job(DATABRICKS_JOB_ID)
 
 if "settings" not in job:
-    print("Your job has been configured without a 'settings' block. This shouldn't happen! Please let the Sync team know you encountered this issue.")
+    logger.error("Your job has been configured without a 'settings' block. This shouldn't happen! Please let the Sync team know you encountered this issue.")
 
 try: 
     #default to job_clusters if they exist, else get tasks (which should always exist)
@@ -115,137 +190,81 @@ try:
             updated_ondemand = (cluster["num_workers"] or 0) + 1
 
 
-        print(f"first_on_demand: {original_ondemand or ''} -> {updated_ondemand or ''}")
+        logger.info(f"first_on_demand: {original_ondemand or ''} -> {updated_ondemand or ''}")
 
 
         cluster[cloud_attributes_key]["first_on_demand"] = updated_ondemand
         new_settings = {key: clusters}
-        databricks_client.update_job(job_id=DATABRICKS_JOB_ID, new_settings=new_settings)
+        sync_databricks_client.update_job(job_id=DATABRICKS_JOB_ID, new_settings=new_settings)
     
 except KeyError as k:
-    print(f"We hit an error in the setup process. Contact the Sync Team for next steps. Error: {k}")    
+    logger.error(f"We hit an error in the setup process. Contact the Sync Team for next steps. Error: {k}")    
 
 
 # COMMAND ----------
-
-import json
-import requests
-import time
-from dateutil import parser
-from datetime import datetime, timezone
-from sync.clients import sync, databricks
-from sync.api import projects
-
-databricks_client = databricks.get_default_client()
-sync_client = sync.get_default_client()
 
 class RecommendationError(Exception):
     "Raised something goes wrong with the generation of a GradientML Recommendation"
 
     def __init__(self, error):
-        super().__init__("Recommendation Error: " + str(error))
+        super().__init__("recommendation Error: " + str(error))
 
-def get_custom_tag_value(key):
-    #this will not work correctly for jobs with multiple clusters
-    job = databricks_client.get_job(DATABRICKS_JOB_ID)
-    if clusters := (job["settings"].get("job_clusters") or job["settings"].get("tasks")):
-        val = clusters[0]["new_cluster"]["custom_tags"].get(key)
-    else:
-        raise(ValueError("This job does not have configured task-level or job-level compute clusters"))
-    return val
+def run_job(run_job_id: str):
 
-if project_id := get_custom_tag_value("sync:project-id"):
-    if not projects.get_project(project_id).result["auto_apply_recs"]:
-        raise RecommendationError("Recommendations will not be created for this project because 'auto_apply_recs' is False")
-else:
-    raise ValueError("Job has not been properly onboarded. Cluster tags are missing")
+    run_start = sync_databricks_client.create_job_run({"job_id": run_job_id})
+    run_id = run_start['run_id']
 
-def run_job(run_job_id):
-    values = {'job_id': run_job_id}
-
-    resp = requests.post(os.getenv("DATABRICKS_HOST") + '/api/2.1/jobs/run-now',
-                            data=json.dumps(values), auth=("token", os.getenv("DATABRICKS_TOKEN")))
-    runjson = resp.text
-    print(runjson)
-
-    d = json.loads(runjson)
-    runid = d['run_id']
-    print(f"run_id: {runid}")
+    logger.info(f"run_id: {run_id}")
+    logger.info("waiting for job run to complete...")
 
     while True:
         time.sleep(60)
-        print("...")
-        endpoint = f"{os.getenv('DATABRICKS_HOST')}/api/2.1/jobs/runs/get?run_id={runid}"
-        jobresp = requests.get(endpoint, auth=("token", os.getenv("DATABRICKS_TOKEN")))
-        j = json.loads(jobresp.text)            
-        current_state = j['state']['life_cycle_state']
-        runid = j['run_id']
+        run = sync_databricks_client.get_run(run_id)
+        current_state = run["state"]["life_cycle_state"]
+        runid = run["run_id"]
         if current_state in ['TERMINATED', 'INTERNAL_ERROR', 'SKIPPED']:
-            termination_state = j['state']['result_state']
+            termination_state = run["state"]["result_state"]
             break
-    return termination_state
+    return run
 
-def wait_for_recommendation(starting_recommendation_id):
-    print(f"Waiting for log submission and rec generation and application")
-    start_time = datetime.now(timezone.utc)
-    current_recommendation_id = get_custom_tag_value("sync:recommendation-id")
+def wait_for_recommendation(starting_recommendation_id: str | None) -> None:
+    logger.info(f"waiting for log submission and rec generation and application")
+    logger.info(f"starting recommendation id: {starting_recommendation_id}")    
 
-    starting_recommendation_submission_id = None
-    current_recommendation_submission_id = None
-
-    if project_id := get_custom_tag_value("sync:project-id"):
-        if starting_recommendation_id:
-            starting_recommendation_submission_id = sync_client.get_project_recommendation(project_id, starting_recommendation_id)["result"]["context"]["latest_submission_id"]
-        if current_recommendation_id:
-            current_recommendation_submission_id = sync_client.get_project_recommendation(project_id, current_recommendation_id)["result"]["context"]["latest_submission_id"]
-    
-    while current_recommendation_submission_id == starting_recommendation_submission_id:
+    while True:
         time.sleep(30)
-        current_reccomendation_id = get_custom_tag_value("sync:recommendation-id")
+        job = sync_databricks_client.get_job(DATABRICKS_JOB_ID)
+        project_id = get_tag_for_job(job, "sync:project-id")
+        current_recommendation_id = get_tag_for_job(job, "sync:recommendation-id")
 
-        if project_id := get_custom_tag_value("sync:project-id"):
-            if current_recommendation_id:
-                current_recommendation_submission_id = sync_client.get_project_recommendation(project_id, current_reccomendation_id)["result"]["context"]["latest_submission_id"]
-            #check if a new recommendation has been created, and provide a 5 min leeway period to update the databricks job
-            if recommendations := sync_client.get_project_recommendations(get_custom_tag_value("sync:project-id"))["result"]:
-                latest_recommendation = recommendations[0]
-                if latest_recommendation["id"] != starting_recommendation_id:
-                    if latest_recommendation["state"] == 'FAILURE':
-                        raise RecommendationError("Recommendation state is FAILURE")
-                    latest_rec_created_time = parser.parse(latest_recommendation["created_at"])
-                    if (datetime.now(timezone.utc) - latest_rec_created_time).total_seconds() > 5 * 60:
-                        raise RecommendationError("Recommendation was unsuccessfully applied to databricks job")
-        
-        #timeout if it takes longer that 45 minutes
-        if (datetime.now(timezone.utc) - start_time).total_seconds() > 45 * 60:
-            raise RecommendationError("Recommendation timed out (45 minutes)")
+        if current_recommendation_id != starting_recommendation_id:
+            logger.info(f"current recommendation id: {current_recommendation_id}")
+            current_recommendation = sync_client.get_project_recommendation(project_id, current_recommendation_id)["result"]
+            if current_recommendation["state"] == "FAILURE":
+                raise RecommendationError("Recommendation state is FAILURE")
+            elif current_recommendation["state"] == "SUCCESS":
+                return
+            else:
+                raise RecommendationError(f"Unexpected recommmendation state: {current_recommendation['id']} / {current_recommendation['state']}")
 
-def submit_test_runs(submit_job_id, training_runs):
+
+def run_loop_with_webhook():
     current_run=1
-    while current_run <= training_runs:
-        print(f"Starting run {current_run} of {training_runs}")
-        current_recommendation_id = get_custom_tag_value("sync:recommendation-id")
-        termination_state = run_job(run_job_id=submit_job_id)
-        print(f"Run status: {termination_state}")
-        if termination_state == 'SUCCESS':
-            print("Completed")
+    while current_run <= TRAINING_RUNS:
+        logger.info(f"starting run {current_run} of {TRAINING_RUNS}")
+        current_recommendation_id = get_tag_for_job(None, "sync:recommendation-id")
+        run = run_job(run_job_id=DATABRICKS_JOB_ID)
+        logger.info(f"run status: {run['state']['result_state']}")
+        if run["state"]["result_state"] == 'SUCCESS':
+            logger.info("run completed")
             current_run = current_run + 1
             wait_for_recommendation(current_recommendation_id)
         else:
-            print("Unsuccessful run. Training Ended")
-            current_run = training_runs + 1
+            logger.info("training ended due to unsuccessful run")
+            current_run = TRAINING_RUNS + 1
 
 
 # COMMAND ----------
-
-from databricks.sdk import WorkspaceClient
-from databricks_cli.sdk.api_client import ApiClient
-from databricks_cli.jobs.api import JobsApi
-from sync._databricks import get_recommendation_job
-import datetime
-from sync.api.projects import create_project, create_project_recommendation, wait_for_recommendation
-
-w = WorkspaceClient(host=os.environ["DATABRICKS_HOST"], token=os.environ["DATABRICKS_TOKEN"])
 
 def create_submission_and_get_recommendation_job_for_run(
     dbx_job_id: str,
@@ -261,113 +280,86 @@ def create_submission_and_get_recommendation_job_for_run(
         raise Exception(response)
     logger.info(f"submission_id={response.result}")
 
-    response = create_project_recommendation(sync_project_id)
+    response = projects.create_project_recommendation(sync_project_id)
     if response.error:
         raise Exception(response)
     logger.info(f"recommendation_id={response.result}")
 
-    response = wait_for_recommendation(sync_project_id, response.result)
+    response = projects.wait_for_recommendation(sync_project_id, response.result)
     if response.error:
         raise Exception(response)
 
     return get_recommendation_job(dbx_job_id, sync_project_id, response.result["id"])
 
 def run_and_monitor_job(dbx_job_id: str) -> str:
-    logger.info("Running and monitoring databricks job")
-    waiter = w.jobs.run_now(dbx_job_id)
-    run = waiter.result(timeout=datetime.timedelta(minutes=240))
-    logger.info(f"job finished: {run.run_page_url}")
-    return str(run.run_id)
+    logger.info("running and monitoring databricks job")
+    run = run_job(dbx_job_id)
+    logger.info(f"job finished: {run['run_page_url']}")
+    return str(run["run_id"])
 
 
-def delete_webhooks_from_job(sync_project_id: str, databricks_api_client: ApiClient):
+def delete_webhooks_from_job(sync_project_id: str):
 
-    logger.info("Deleting webhooks from job")
+    logger.info("deleting webhooks from job")
     response = sync_databricks.get_project_job(job_id=DATABRICKS_JOB_ID, project_id=sync_project_id)
 
     job = response.result
     settings = job["settings"]
 
     if "webhook_notifications" in settings:
-        settings["webhook_notifications"] = None
+        settings["webhook_notifications"] = {}
 
     for task in settings["tasks"]:
         if "webhook_notifications" in task:
-            task["webhook_notifications"] = None
-
-    update = JobsApi(databricks_api_client).reset_job(
-        {
-            "job_id": DATABRICKS_JOB_ID,
-            "new_settings": settings,
-        }
+            task["webhook_notifications"] = {}
+    
+    update = sync_databricks_client.update_job(
+        job_id=DATABRICKS_JOB_ID,
+        new_settings=settings,
     )
 
-def validate_job_for_bypass(databricks_api_client: ApiClient):
+def get_databricks_plan():
 
-    logger.info("Validating job for webhook bypass")
-    job = JobsApi(databricks_api_client).get_job(DATABRICKS_JOB_ID)
-    settings = job["settings"]
-
-    if settings.get("format") == "MULTI_TASK":
-
-        num_clusters = 0
-        job_cluster_key_set = set({})
-        for task in settings["tasks"]:
-            if job_cluster_key := task.get("job_cluster_key"):
-                if job_cluster_key not in job_cluster_key_set:
-                    job_cluster_key_set.add(job_cluster_key)
-                    num_clusters += 1
-            elif task.get("new_cluster"):
-                num_clusters +=1
-
-        if num_clusters > 1:
-            raise Exception(f"Webhook bypass is only allowed for single-cluster jobs. Detected {num_clusters} clusters.")
-
+    workspace_id = spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId")
+    configs = sync_client.get_workspace_config(workspace_id)
+    if plan := configs.get("result", {}).get("plan_type"):
+        return plan
+    else:
+        raise Exception(f"Could not identify Databricks plan for workspace {workspace_id}")
 
 def run_loop_with_library():
 
-    databricks_api_client = ApiClient(host=os.getenv("DATABRICKS_HOST"), token=os.getenv("DATABRICKS_TOKEN"))
-    validate_job_for_bypass(databricks_api_client)
-
-    # 1. Create the Sync Project
-    logger.info("Creating Sync project")
-    response = create_project("sync_test_project", platform, job_id=DATABRICKS_JOB_ID)
-    if response.error:
-        raise Exception(response)
-    sync_project_id = response.result["id"]
+    sync_project_id = get_tag_for_job(None, "sync:project-id")
+    databricks_plan = get_databricks_plan()
     logger.info(f"project_id={sync_project_id}")
 
-    # 2. Delete webhooks from job settings.
+    # 1. Delete webhooks from job settings.
     #    Submissions & Recommendations will be handled in this method
-    delete_webhooks_from_job(sync_project_id, databricks_api_client)
+    delete_webhooks_from_job(sync_project_id)
 
     for _ in range(TRAINING_RUNS):
 
-        # 3. Run and monitor the databricks job
-        logger.info("Starting databricks job run")
+        
+        # 2. Run and monitor the databricks job
+        logger.info("starting databricks job run")
         dbx_run_id = run_and_monitor_job(DATABRICKS_JOB_ID)
         logger.info(f"run_id={dbx_run_id}")
 
         response = create_submission_and_get_recommendation_job_for_run(
-            DATABRICKS_JOB_ID,
-            dbx_run_id,
-            DATABRICKS_PLAN,
-            "Jobs Compute",
-            sync_project_id
+            DATABRICKS_JOB_ID, dbx_run_id, databricks_plan, "Jobs Compute", sync_project_id
         )
         if response.error:
             raise Exception(response)
 
-        update = JobsApi(databricks_api_client).reset_job(
-            {
-                "job_id": DATABRICKS_JOB_ID,
-                "new_settings": response.result["settings"],
-            }
+        # 3. Update the job
+        update = sync_databricks_client.update_job(
+            job_id= DATABRICKS_JOB_ID,
+            new_settings= response.result["settings"],
         )
 
 # COMMAND ----------
 
 if not BYPASS_WEBHOOK:
-    submit_test_runs(submit_job_id=DATABRICKS_JOB_ID, training_runs=TRAINING_RUNS)
+    run_loop_with_webhook()
 else:
     run_loop_with_library()
