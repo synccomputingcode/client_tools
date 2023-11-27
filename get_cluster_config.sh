@@ -12,7 +12,7 @@ function usage {
 function prereqs {
 # aws client returns 252 when no command is provided
 # 127 is returned, at least on a Mac when the command is missing
-  aws >/dev/null 2>&1
+  aws --no-cli-auto-prompt >/dev/null 2>&1
   if [[ $? -eq 127 ]]; then
     error "aws client is missing. Installation instructions: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html"
   fi
