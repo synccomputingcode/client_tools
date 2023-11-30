@@ -73,18 +73,19 @@ elif platform is Platform.AZURE_DATABRICKS:
 else:
     raise ValueError(f"Unsupported platform: {platform}")
 
+if BYPASS_WEBHOOK:
+    access_report = sync_databricks.get_access_report()
 
-access_report = sync_databricks.get_access_report()
+    for line in access_report:
+        logger.info(line)
 
-for line in access_report:
-    logger.info(line)
-
-assert not any(line.status is AccessStatusCode.RED for line in access_report), "Required access is missing"
+    assert not any(line.status is AccessStatusCode.RED for line in access_report), "Required access is missing"
 
 # COMMAND ----------
 
+from typing import Optional
 
-def get_cluster_for_job(job: dict | None) -> dict:
+def get_cluster_for_job(job: Optional[dict]) -> dict:
 
     if job is None:
         job = sync_databricks_client.get_job(DATABRICKS_JOB_ID)
@@ -110,7 +111,7 @@ def get_cluster_for_job(job: dict | None) -> dict:
     else:
         raise ValueError("Could not identify a cluster for this job")
 
-def get_tag_for_job(job: dict, tag_key: str) -> str | None:
+def get_tag_for_job(job: dict, tag_key: str) -> Optional[str]:
     cluster = get_cluster_for_job(job)
     return cluster["custom_tags"].get(tag_key)
     
@@ -227,7 +228,7 @@ def run_job(run_job_id: str):
             break
     return run
 
-def wait_for_recommendation(starting_recommendation_id: str | None) -> None:
+def wait_for_recommendation(starting_recommendation_id: Optional[str]) -> None:
     logger.info(f"waiting for log submission and rec generation and application")
     logger.info(f"starting recommendation id: {starting_recommendation_id}")    
 
