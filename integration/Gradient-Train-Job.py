@@ -18,6 +18,8 @@ dbutils.widgets.dropdown("Bypass Webhook", "False", ["True", "False"])
 # MAGIC  * The Gradient Webhook has been configured
 # MAGIC  * The Databricks Job has been Gradient enabled
 # MAGIC
+# MAGIC  When bypassing the Gradient Webhook with AWS, the cluster attached to this notebook must have an instance_arn with describe_instances and describe_volumes permissions. When bypassing the Gradient Webhook with Azure, the following environment variables must be set with the correct values: "AZURE_TENANT_ID", "AZURE_SUBSCRIPTION_ID", "AZURE_CLIENT_SECRET", "AZURE_CLIENT_ID"
+# MAGIC
 # MAGIC This job will configure all runs to execute using ON DEMAND nodes only.  The orginal settings will be restored after training is complete.
 # MAGIC
 
@@ -40,7 +42,6 @@ os.environ["DATABRICKS_TOKEN"] =  dbutils.widgets.get("Databricks Token")
 os.environ["SYNC_API_KEY_ID"] = dbutils.widgets.get("Sync API Key ID")
 os.environ["SYNC_API_KEY_SECRET"] = dbutils.widgets.get("Sync API Key Secret")
 os.environ["DATABRICKS_HOST"] = dbutils.widgets.get("Databricks Host").rstrip('\/')
-
 
 print(f"DATABRICKS_JOB_ID: {DATABRICKS_JOB_ID}")
 print(f"TRAINING_RUNS: {TRAINING_RUNS}")
@@ -115,7 +116,6 @@ def get_tag_for_job(job: dict, tag_key: str) -> Optional[str]:
     cluster = get_cluster_for_job(job)
     return cluster["custom_tags"].get(tag_key)
     
-
 def validate_job():  
     logger.info("Validating Databricks Job")
     job = sync_databricks_client.get_job(DATABRICKS_JOB_ID)
@@ -205,7 +205,7 @@ except KeyError as k:
 # COMMAND ----------
 
 class RecommendationError(Exception):
-    "Raised something goes wrong with the generation of a GradientML Recommendation"
+    "Raised when something goes wrong with the generation of a GradientML Recommendation"
 
     def __init__(self, error):
         super().__init__("recommendation Error: " + str(error))
