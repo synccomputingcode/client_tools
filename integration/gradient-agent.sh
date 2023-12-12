@@ -17,7 +17,7 @@ for var in ${REQUIRED_ENV_VARS[*]}; do
   if [[ -z ${!var} ]]; then
     >&2 echo "$var is missing"
     >&2 print_usage
-    exit 1
+    exit
   fi
 done
 
