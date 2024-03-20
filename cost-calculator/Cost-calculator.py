@@ -42,6 +42,10 @@ dbutils.library.restartPython()
 # MAGIC  
 # MAGIC # download data to destination folder
 # MAGIC wget -N https://raw.githubusercontent.com/syncpete/notebooks/main/dbus_vcpus.csv -P /dbfs/tmp/sync/gradient
+# MAGIC
+# MAGIC  
+# MAGIC # download data to destination folder
+# MAGIC wget -N https://raw.githubusercontent.com/syncpete/notebooks/main/fleet.csv -P /dbfs/tmp/sync/gradient
 
 # COMMAND ----------
 
@@ -109,6 +113,18 @@ sparkInstanceTypesDF = spark.read.csv(csv_filename, sep=',',
 
 sparkInstanceTypesDF.createOrReplaceTempView("dbus_jobs_enterprise")  
 
+fleet_csv_filename = "/tmp/sync/gradient/fleet.csv"
+
+fleet_schema = StructType([
+    StructField("instance_size", StringType()),
+    StructField("vcpus", LongType())
+])
+ 
+sparkFleetDF = spark.read.csv(fleet_csv_filename, sep=',',
+                         schema=fleet_schema, header=True)
+
+sparkFleetDF.createOrReplaceTempView("fleet_size")  
+
 # COMMAND ----------
 
 # MAGIC %sql
@@ -121,11 +137,14 @@ sparkInstanceTypesDF.createOrReplaceTempView("dbus_jobs_enterprise")
 # MAGIC
 # MAGIC drop table if exists gradient_usage_predictions.dbus_jobs_enterprise;
 # MAGIC create table gradient_usage_predictions.dbus_jobs_enterprise as select * from dbus_jobs_enterprise;
+# MAGIC
+# MAGIC drop table if exists gradient_usage_predictions.fleet_size;
+# MAGIC create table gradient_usage_predictions.fleet_size as select * from fleet_size;
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Get Single Cluster By ID
+# MAGIC ## Function: Get Single Cluster By ID
 # MAGIC This is needed for any cluster not returned by the list calls
 
 # COMMAND ----------
@@ -168,6 +187,8 @@ def get_cluster(job_id, run_id, task_key, cluster_id, compute_definition):
     except:
         pass
     #except Exception as e: print(e)
+
+
 
 # COMMAND ----------
 
@@ -217,7 +238,7 @@ for clusterObj in clustersGen:
     }
     clusters.append(row)
 
-schema = StructType([
+clusterSchema = StructType([
     StructField("cluster_id", StringType()),
     StructField("name", StringType()),
     StructField("creator_user_name", StringType()),
@@ -235,24 +256,61 @@ schema = StructType([
 	StructField("aws_attributes_spot_bid_price_percent", StringType()),
 	StructField("aws_attributes_instance_profile_arn", StringType()),
 	StructField("aws_attributes_zone_id", StringType()),
-	StructField("cluster_memory_mb", LongType()),
-	StructField("cluster_cores", LongType()),
+	StructField("cluster_memory_mb", StringType()),
+	StructField("cluster_cores", StringType()),
 	StructField("cluster_source", StringType()),
 	StructField("driver_node", StringType()),
 	StructField("worker_node", StringType()),
-	StructField("num_workers", LongType()),
-	StructField("autoscale_min", LongType()),
-	StructField("autoscale_max", LongType()),
+	StructField("num_workers", StringType()),
+	StructField("autoscale_min", StringType()),
+	StructField("autoscale_max", StringType()),
 	StructField("spark_version", StringType()),
 	StructField("policy_id", StringType()),
 	StructField("custom_tags", StringType()),
-	StructField("autotermination_minutes", LongType()),
+	StructField("autotermination_minutes", StringType()),
 	StructField("spark_conf", StringType()),
 	StructField("runtime_engine", StringType()),
 ])
 
-sparkClustersDF = spark.createDataFrame(data=clusters)
+sparkClustersDF = spark.createDataFrame(data=clusters, schema=clusterSchema)
 sparkClustersDF.createOrReplaceTempView("cluster_info")
+
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Get Pools for Lookup
+# MAGIC
+
+# COMMAND ----------
+
+poolsGen = w.instance_pools.list()
+pools = []
+
+for poolObj in poolsGen:
+    row = {
+        "instance_pool_id": safe_getattr(poolObj, "instance_pool_id"),
+        "instance_pool_name": safe_getattr(poolObj, "instance_pool_name"),
+        "aws_attributes_availability": safe_getattr(poolObj, "aws_attributes.availability.value", "None"),
+        "aws_attributes_spot_bid_price_percent": safe_getattr(clusterObj, "aws_attributes.spot_bid_price_percent", "None"),
+        "aws_attributes_zone_id": safe_getattr(clusterObj, "aws_attributes.zone_id", "None"),
+        "node_type_id": safe_getattr(clusterObj, "node_type_id"),
+        "custom_tags": safe_getattr(clusterObj, "custom_tags", "None"),
+    }
+    pools.append(row)
+
+poolsSchema = StructType([
+    StructField("instance_pool_id", StringType()),
+    StructField("instance_pool_name", StringType()),
+    StructField("aws_attributes_availability", StringType()),
+    StructField("aws_attributes_spot_bid_price_percent", StringType()),
+    StructField("aws_attributes_zone_id", StringType()),
+    StructField("node_type_id", StringType()),
+    StructField("custom_tags", StringType())
+])
+
+sparkPoolsDF = spark.createDataFrame(data=pools, schema=poolsSchema)
+sparkPoolsDF.createOrReplaceTempView("pools_info")
 
 
 # COMMAND ----------
@@ -262,6 +320,8 @@ sparkClustersDF.createOrReplaceTempView("cluster_info")
 # MAGIC drop table if exists gradient_usage_predictions.cluster_info;
 # MAGIC create table gradient_usage_predictions.cluster_info as select * from cluster_info;
 # MAGIC
+# MAGIC drop table if exists gradient_usage_predictions.pools_info;
+# MAGIC create table gradient_usage_predictions.pools_info as select * from pools_info;
 
 # COMMAND ----------
 
@@ -325,7 +385,7 @@ sparkJobsDF.createOrReplaceTempView("job_info")
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Get Run Info
+# MAGIC ## Get Run & Cluster Info
 # MAGIC - Duration
 # MAGIC - State
 # MAGIC - Start, End Times
@@ -344,6 +404,99 @@ sparkJobsDF.createOrReplaceTempView("job_info")
 # MAGIC     - sharable job_cluster, defined in run, linked in task
 # MAGIC     - sharable job_cluster, defined in run, not linked in task (missing)
 # MAGIC     - new cluster
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC
+# MAGIC ### Function: Get Cluster From Object
+# MAGIC Deserialize Cluster object into python dict
+
+# COMMAND ----------
+
+def serialize_cluster_obj(job_id, run_id, task_key, clusterObj):
+        if clusterObj.instance_pool_id is not None:
+
+                pool_cluster_row = sparkPoolsDF.where(col("instance_pool_id") == clusterObj.instance_pool_id).first()
+
+                # If worker is pool driver has to be pool as well.  If no driver_pool specified, it uses same as worker
+                if clusterObj.driver_instance_pool_id is not None:
+                        driver_pool_cluster_row = sparkPoolsDF.where(col("instance_pool_id") == clusterObj.driver_instance_pool_id).first()
+                else: 
+                        driver_pool_cluster_row = pool_cluster_row
+
+                # couldn't lookup
+                if pool_cluster_row is None:
+                        print("Unable to find pool:" + clusterObj.instance_pool_id)
+                        return None
+
+                row = {
+                        "job_id": job_id,
+                        "run_id": run_id,
+                        "task_key": task_key,                        
+                        "cluster_identifier": "Pool Defined",
+                        "compute_definition": 'Jobs Compute',
+                        "aws_attributes_availability": pool_cluster_row.asDict()['aws_attributes_availability'],
+                        "enable_elastic_disk": str(safe_getattr(clusterObj, "enable_elastic_disk")),
+                        "enable_local_disk_encryption": safe_getattr(clusterObj, "enable_local_disk_encryption"),
+                        "workload_type_jobs": safe_getattr(clusterObj, "workload_type.clients.jobs", "None"),
+                        "aws_attributes_ebs_volume_count": safe_getattr(clusterObj, "aws_attributes.ebs_volume_count", 0),
+                        "aws_attributes_ebs_volume_iops": safe_getattr(clusterObj, "aws_attributes.ebs_volume_iops", 0),
+                        "aws_attributes_ebs_volume_size": safe_getattr(clusterObj, "aws_attributes.ebs_volume_size", 0),
+                        "aws_attributes_ebs_volume_throughput": safe_getattr(clusterObj, "aws_attributes.ebs_volume_throughput", 0),
+                        "aws_attributes_ebs_volume_type": safe_getattr(clusterObj, "aws_attributes.ebs_volume_type.value", "None"),
+                        "aws_attributes_first_on_demand": safe_getattr(clusterObj, "aws_attributes.first_on_demand"),
+                        "aws_attributes_spot_bid_price_percent": pool_cluster_row.asDict()['aws_attributes_spot_bid_price_percent'],
+                        "aws_attributes_instance_profile_arn": safe_getattr(clusterObj, "aws_attributes.instance_profile_arn"),        
+                        "aws_attributes_zone_id": pool_cluster_row.asDict()['aws_attributes_zone_id'],                        
+                        "driver_node": driver_pool_cluster_row.asDict()['node_type_id'],
+                        "worker_node": pool_cluster_row.asDict()['node_type_id'],
+                        "num_workers": safe_getattr(clusterObj, "num_workers", 0),
+                        "autoscale_min": safe_getattr(clusterObj, "autoscale.min_workers", 0),
+                        "autoscale_max": safe_getattr(clusterObj, "autoscale.max_workers", 0),
+                        "spark_version": safe_getattr(clusterObj, "spark_version"),
+                        "policy_id": safe_getattr(clusterObj, "policy_id"),
+                        "autotermination_minutes": str(safe_getattr(clusterObj, "autotermination_minutes")), 
+                        "runtime_engine": safe_getattr(clusterObj, "runtime_engine.value", "None"),
+                        "spark_conf": str(safe_getattr(clusterObj, "spark_conf", "None")),
+                        "custom_tags": str(safe_getattr(clusterObj, "custom_tags", "None"))      
+                }
+
+               
+        else:
+                row = {
+                        "job_id": job_id,
+                        "run_id": run_id,
+                        "task_key": task_key,                        
+                        "cluster_identifier": "Task Defined",
+                        "compute_definition": 'Jobs Compute',
+                        "aws_attributes_availability": safe_getattr(clusterObj, "aws_attributes.availability.value", "None"),
+                        "enable_elastic_disk": str(safe_getattr(clusterObj, "enable_elastic_disk")),
+                        "enable_local_disk_encryption": safe_getattr(clusterObj, "enable_local_disk_encryption"),
+                        "workload_type_jobs": safe_getattr(clusterObj, "workload_type.clients.jobs", "None"),
+                        "aws_attributes_ebs_volume_count": safe_getattr(clusterObj, "aws_attributes.ebs_volume_count", 0),
+                        "aws_attributes_ebs_volume_iops": safe_getattr(clusterObj, "aws_attributes.ebs_volume_iops", 0),
+                        "aws_attributes_ebs_volume_size": safe_getattr(clusterObj, "aws_attributes.ebs_volume_size", 0),
+                        "aws_attributes_ebs_volume_throughput": safe_getattr(clusterObj, "aws_attributes.ebs_volume_throughput", 0),
+                        "aws_attributes_ebs_volume_type": safe_getattr(clusterObj, "aws_attributes.ebs_volume_type.value", "None"),
+                        "aws_attributes_first_on_demand": safe_getattr(clusterObj, "aws_attributes.first_on_demand"),
+                        "aws_attributes_spot_bid_price_percent": safe_getattr(clusterObj, "aws_attributes.spot_bid_price_percent"),
+                        "aws_attributes_instance_profile_arn": safe_getattr(clusterObj, "aws_attributes.instance_profile_arn"),        
+                        "aws_attributes_zone_id": safe_getattr(clusterObj, "aws_attributes.zone_id"),                        
+                        "driver_node": safe_getattr(clusterObj, "driver_node_type_id", safe_getattr(clusterObj, "node_type_id")),
+                        "worker_node": safe_getattr(clusterObj, "node_type_id"),
+                        "num_workers": safe_getattr(clusterObj, "num_workers", 0),
+                        "autoscale_min": safe_getattr(clusterObj, "autoscale.min_workers", 0),
+                        "autoscale_max": safe_getattr(clusterObj, "autoscale.max_workers", 0),
+                        "spark_version": safe_getattr(clusterObj, "spark_version"),
+                        "policy_id": safe_getattr(clusterObj, "policy_id"),
+                        "autotermination_minutes": str(safe_getattr(clusterObj, "autotermination_minutes")), 
+                        "runtime_engine": safe_getattr(clusterObj, "runtime_engine.value", "None"),
+                        "spark_conf": str(safe_getattr(clusterObj, "spark_conf", "None")),
+                        "custom_tags": str(safe_getattr(clusterObj, "custom_tags", "None"))      
+                }
+
+        return row                      
 
 # COMMAND ----------
 
@@ -401,9 +554,8 @@ for runObj in runsGen:
         }
         runs.append(run_info)
         
-        
-        # APC
-        if task.existing_cluster_id is not None:
+
+        if task.existing_cluster_id is not None: #### APC COMPUTE ####
             existing_cluster_row = sparkClustersDF.where(col("cluster_id") == task.existing_cluster_id).first()
             if existing_cluster_row is not None:
                 row = {
@@ -442,89 +594,34 @@ for runObj in runsGen:
                 single_cluster=get_cluster(safe_getattr(runObj, "job_id"),safe_getattr(runObj, "run_id"),safe_getattr(task, "task_key"),safe_getattr(task, "existing_cluster_id"),'All Purpose Compute')
                 if single_cluster is not None:
                     run_clusters.append(single_cluster)
-                else: # Unable to log
+                else: # Unable to retrieve cluster
                     no_data.append({"job_id": runObj.job_id, "run_id": runObj.run_id, "task_key": task.task_key, "cluster_id": task.existing_cluster_id, "status": "APC not in cluster list and can't be retrieved"}) 
-        else:  # Jobs Compute
-            if hasattr(task, "job_cluster_key") == False: #defined in Task
+        else:  #### JOBS COMPUTE DEFINED IN TASK ####
+            if hasattr(task, "job_cluster_key"): #### JOBS COMPUTE DEFINED IN SHARED JOBS CLUSTER ####
+                for cluster in runObj.job_clusters:
+                    if (cluster.job_cluster_key == task.job_cluster_key):
+                        row = serialize_cluster_obj(safe_getattr(runObj, "job_id"),safe_getattr(runObj, "run_id"),safe_getattr(task, "task_key"), cluster.new_cluster)
+                        if row is not None:
+                            run_clusters.append(row) 
+                        else:
+                            no_data.append({"job_id": runObj.job_id, "run_id": runObj.run_id, "task_key": task.task_key, "cluster_id": cluster.new_cluster.cluster_instance.cluster_id, "status": "Unable to serialize"})   
+            else: #### NEW CLUSTER DEFINED IN TASK ###
                 if task.new_cluster is not None: 
-                    row = {
-                        "job_id": safe_getattr(runObj, "job_id"),
-                        "run_id": safe_getattr(runObj, "run_id"),
-                        "task_key": safe_getattr(task, "task_key"),                        
-                        "cluster_identifier": "Task Defined",
-                        "compute_definition": 'Jobs Compute',
-                        "aws_attributes_availability": safe_getattr(task, "new_cluster.aws_attributes.availability.value", "None"),
-                        "enable_elastic_disk": str(safe_getattr(task, "new_cluster.enable_elastic_disk")),
-                        "enable_local_disk_encryption": safe_getattr(task, "new_cluster.enable_local_disk_encryption"),
-                        "workload_type_jobs": safe_getattr(task, "new_cluster.workload_type.clients.jobs", "None"),
-                        "aws_attributes_ebs_volume_count": safe_getattr(task, "new_cluster.aws_attributes.ebs_volume_count", 0),
-                        "aws_attributes_ebs_volume_iops": safe_getattr(task, "new_cluster.aws_attributes.ebs_volume_iops", 0),
-                        "aws_attributes_ebs_volume_size": safe_getattr(task, "new_cluster.aws_attributes.ebs_volume_size", 0),
-                        "aws_attributes_ebs_volume_throughput": safe_getattr(task, "new_cluster.aws_attributes.ebs_volume_throughput", 0),
-                        "aws_attributes_ebs_volume_type": safe_getattr(task, "new_cluster.aws_attributes.ebs_volume_type.value", "None"),
-                        "aws_attributes_first_on_demand": safe_getattr(task, "new_cluster.aws_attributes.first_on_demand"),
-                        "aws_attributes_spot_bid_price_percent": safe_getattr(task, "new_cluster.aws_attributes.spot_bid_price_percent"),
-                        "aws_attributes_instance_profile_arn": safe_getattr(task, "new_cluster.aws_attributes.instance_profile_arn"),        
-                        "aws_attributes_zone_id": safe_getattr(task, "new_cluster.aws_attributes.zone_id"),                        
-                        "driver_node": safe_getattr(task, "new_cluster.driver_node_type_id", safe_getattr(task, "new_cluster.node_type_id")),
-                        "worker_node": safe_getattr(task, "new_cluster.node_type_id"),
-                        "num_workers": safe_getattr(task, "new_cluster.num_workers", 0),
-                        "autoscale_min": safe_getattr(task, "new_cluster.autoscale.min_workers", 0),
-                        "autoscale_max": safe_getattr(task, "new_cluster.autoscale.max_workers", 0),
-                        "spark_version": safe_getattr(task, "new_cluster.spark_version"),
-                        "policy_id": safe_getattr(task, "new_cluster.policy_id"),
-                        "autotermination_minutes": str(safe_getattr(task, "new_cluster.autotermination_minutes")), 
-                        "runtime_engine": safe_getattr(task, "new_cluster.runtime_engine.value", "None"),
-                        "spark_conf": str(safe_getattr(task, "new_cluster.spark_conf", "None")),
-                        "custom_tags": str(safe_getattr(task, "new_cluster.custom_tags", "None"))                        
-                    }
-                    run_clusters.append(row)
+                    row = serialize_cluster_obj(safe_getattr(runObj, "job_id"),safe_getattr(runObj, "run_id"),safe_getattr(task, "task_key"), task.new_cluster)
+                    if row is not None:
+                        run_clusters.append(row)
+                    else:
+                        no_data.append({"job_id": runObj.job_id, "run_id": runObj.run_id, "task_key": task.task_key, "cluster_id": task.new_cluster.cluster_instance.cluster_id, "status": "Unable to serialize"})     
                 else: # get cluster from instance
                     if task.cluster_instance is not None:
                         single_cluster=get_cluster(safe_getattr(runObj, "job_id"),safe_getattr(runObj, "run_id"),safe_getattr(task, "task_key"),safe_getattr(task, "cluster_instance.cluster_id"),'Jobs Compute')                            
-                        if single_cluster is not None:
+                        if single_cluster is not None: # lookup worked
                             run_clusters.append(single_cluster)
-                        else: 
+                        else: # cluster instance but can't retrieve
                             no_data.append({"job_id": runObj.run_id, "run_id": runObj.run_id, "task_key": task.task_key, "cluster_id": task.cluster_instance.cluster_id, "status": "Unable to lookup job cluster"})
-                    else:
+                    else: # Not defined in Task and no cluster instance
                         no_data.append({"job_id": runObj.run_id, "run_id": runObj.run_id, "task_key": task.task_key, "cluster_id": "unknown", "status": "Not defined and no cluster instance"})
-    
-            else: # shared Jobs Compute
-                for cluster in runObj.job_clusters:
-                    if (cluster.job_cluster_key == task.job_cluster_key):
-                        row = {
-                        "job_id": safe_getattr(runObj, "job_id"),
-                        "run_id": safe_getattr(runObj, "run_id"),
-                        "task_key": safe_getattr(task, "task_key"),
-                        "cluster_identifier": safe_getattr(task, "job_cluster_key"),
-                        "compute_definition": 'Jobs Compute',
-                        "aws_attributes_availability": safe_getattr(cluster, "new_cluster.aws_attributes.availability.value", "None"),
-                        "enable_elastic_disk": str(safe_getattr(cluster, "new_cluster.enable_elastic_disk")),
-                        "enable_local_disk_encryption": safe_getattr(cluster, "new_cluster.enable_local_disk_encryption"),
-                        "workload_type_jobs": safe_getattr(cluster, "new_cluster.workload_type.clients.jobs", "None"),
-                        "aws_attributes_ebs_volume_count": safe_getattr(cluster, "new_cluster.aws_attributes.ebs_volume_count", 0),
-                        "aws_attributes_ebs_volume_iops": safe_getattr(cluster, "new_cluster.aws_attributes.ebs_volume_iops", 0),
-                        "aws_attributes_ebs_volume_size": safe_getattr(cluster, "new_cluster.aws_attributes.ebs_volume_size", 0),
-                        "aws_attributes_ebs_volume_throughput": safe_getattr(cluster, "new_cluster.aws_attributes.ebs_volume_throughput", 0),
-                        "aws_attributes_ebs_volume_type": safe_getattr(cluster, "new_cluster.aws_attributes.ebs_volume_type.value", "None"),
-                        "aws_attributes_first_on_demand": safe_getattr(cluster, "new_cluster.aws_attributes.first_on_demand"),
-                        "aws_attributes_spot_bid_price_percent": safe_getattr(cluster, "new_cluster.aws_attributes.spot_bid_price_percent"),
-                        "aws_attributes_instance_profile_arn": safe_getattr(cluster, "new_cluster.aws_attributes.instance_profile_arn"),        
-                        "aws_attributes_zone_id": safe_getattr(cluster, "new_cluster.aws_attributes.zone_id"),                              
-                        "driver_node": safe_getattr(cluster, "new_cluster.driver_node_type_id", safe_getattr(cluster, "new_cluster.node_type_id")),
-                        "worker_node": safe_getattr(cluster, "new_cluster.node_type_id"),
-                        "num_workers": safe_getattr(cluster, "new_cluster.num_workers", 0),
-                        "autoscale_min": safe_getattr(cluster, "new_cluster.autoscale.min_workers", 0),
-                        "autoscale_max": safe_getattr(cluster, "new_cluster.autoscale.max_workers", 0),
-                        "spark_version": safe_getattr(cluster, "new_cluster.spark_version"),
-                        "policy_id": safe_getattr(cluster, "new_cluster.policy_id"),
-                        "autotermination_minutes": str(safe_getattr(cluster, "new_cluster.autotermination_minutes")), 
-                        "runtime_engine": safe_getattr(cluster, "new_cluster.runtime_engine.value", "None"),
-                        "spark_conf": str(safe_getattr(cluster, "new_cluster.spark_conf", "None")),
-                        "custom_tags": str(safe_getattr(cluster, "new_cluster.custom_tags", "None"))
-                    }
-
-                    run_clusters.append(row)        
+     
 
 
 # Define the schema based on the provided types_dict
@@ -622,6 +719,10 @@ sparkNoClustersDF.createOrReplaceTempView("job_run_no_cluster_info")
 
 # COMMAND ----------
 
+display(sparkPoolsDF)
+
+# COMMAND ----------
+
 # MAGIC %sql
 # MAGIC
 # MAGIC drop table if exists gradient_usage_predictions.job_run_info;
@@ -641,11 +742,6 @@ sparkNoClustersDF.createOrReplaceTempView("job_run_no_cluster_info")
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC select * from gradient_usage_predictions.job_run_info
-
-# COMMAND ----------
-
-# MAGIC %sql
 # MAGIC select 'all runs tasks', count(distinct run_id, task_key) counts from gradient_usage_predictions.job_run_info
 # MAGIC union
 # MAGIC select 'tasks with cluster definition', count(distinct run_id, task_key) from gradient_usage_predictions.job_run_cluster_info
@@ -659,10 +755,6 @@ sparkNoClustersDF.createOrReplaceTempView("job_run_no_cluster_info")
 
 # MAGIC %sql
 # MAGIC select * from gradient_usage_predictions.job_run_no_cluster_info 
-
-# COMMAND ----------
-
-
 
 # COMMAND ----------
 
@@ -712,20 +804,20 @@ sparkNoClustersDF.createOrReplaceTempView("job_run_no_cluster_info")
 # MAGIC        jri.run_starttime,
 # MAGIC        jri.run_result_state,
 # MAGIC        ajc.driver_node,
-# MAGIC        dd.vcpus driver_vcps,
+# MAGIC        fsd.vcpus driver_vcps,
 # MAGIC        ajc.node_provision_method,
 # MAGIC        ajc.worker_node,
 # MAGIC        case when (ajc.num_workers = 'None') then 0 else ajc.num_workers end worker_nodes,
 # MAGIC        case when (ajc.autoscale_min = 'None') then 0 else ajc.autoscale_min end autoscale_min,
 # MAGIC        case when (ajc.autoscale_max = 'None') then 0 else ajc.autoscale_max end autoscale_max,              
-# MAGIC        dw.vcpus worker_vcps,
+# MAGIC        fsw.vcpus worker_vcps,
 # MAGIC        round((jri.run_endtime - jri.run_starttime) / 1000 / 60,2) duration_min,
-# MAGIC        round(((jri.run_endtime - jri.run_starttime) / 1000 / 60 / 60 * dd.dbus) + ((jri.run_endtime - jri.run_starttime) / 1000 / 60 / 60 * dd.dbus * case when (ajc.node_provision_method = 'Autoscale') then ajc.autoscale_max else ajc.num_workers end),2) dbus,
-# MAGIC        round(((jri.run_endtime - jri.run_starttime) / 1000 / 60 / 60 * dd.vcpus) + ((jri.run_endtime - jri.run_starttime) / 1000 / 60 / 60 * dd.vcpus * case when (ajc.node_provision_method = 'Autoscale') then ajc.autoscale_max else ajc.num_workers end), 2) core_hrs
+# MAGIC        round(((jri.run_endtime - jri.run_starttime) / 1000 / 60 / 60 * fsd.vcpus) + ((jri.run_endtime - jri.run_starttime) / 1000 / 60 / 60 * fsw.vcpus * case when (ajc.node_provision_method = 'Autoscale') then ajc.autoscale_max else ajc.num_workers end), 2) core_hrs
 # MAGIC   from gradient_usage_predictions.job_run_info jri
 # MAGIC   join gradient_usage_predictions.all_job_clusters ajc on jri.job_id = ajc.job_id and jri.task_key = ajc.task_key
-# MAGIC   join gradient_usage_predictions.dbus_jobs_enterprise dd on dd.instance_type = ajc.driver_node
-# MAGIC   join gradient_usage_predictions.dbus_jobs_enterprise dw on dw.instance_type = ajc.worker_node;
+# MAGIC   join gradient_usage_predictions.fleet_size fsd on fsd.instance_size = substring_index(ajc.driver_node, '.', -1)
+# MAGIC   join gradient_usage_predictions.fleet_size fsw on fsw.instance_size = substring_index(ajc.worker_node, '.', -1)
+# MAGIC ;
 # MAGIC  
 
 # COMMAND ----------
@@ -737,6 +829,14 @@ sparkNoClustersDF.createOrReplaceTempView("job_run_no_cluster_info")
 
 # MAGIC %md
 # MAGIC # Queries
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC
+# MAGIC select jri.run_result_state, count(*)
+# MAGIC from gradient_usage_predictions.job_run_info jri
+# MAGIC group by 1
 
 # COMMAND ----------
 
@@ -808,11 +908,8 @@ print(yr_mult)
 calc = f"""select '{str(start_date_truncated)} - {str(end_date_truncated)}',
             count(distinct run_name) jobs,
             count(distinct run_id) runs,
-            round(sum(dbus),2) dbus,
             round(sum(core_hrs),2) core_hrs,
-            round(sum(dbus) * {yr_mult},2) est_annual_job_dbus,
             round(sum(core_hrs) * {yr_mult},2) est_annual_core_hrs,
-            round(sum(dbus) * {yr_mult} * {str(jobs_compute_rate)}, 2) est_annual_job_dbu_cost,
             round(sum(core_hrs) * {yr_mult} * .006,2) est_annual_core_hr_cost
          from gradient_usage_predictions.run_usage
          where date_trunc('DAY', to_date(from_unixtime(run_starttime/1000))) >= '{str(start_date_truncated)}'
