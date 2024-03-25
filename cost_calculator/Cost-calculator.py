@@ -41,11 +41,11 @@ dbutils.library.restartPython()
 # MAGIC mkdir -p /dbfs/tmp/sync/gradient # ensure destination folder exists
 # MAGIC  
 # MAGIC # download data to destination folder
-# MAGIC wget -N https://raw.githubusercontent.com/syncpete/notebooks/main/dbus_vcpus.csv -P /dbfs/tmp/sync/gradient
+# MAGIC wget -N https://github.com/synccomputingcode/client_tools/blob/main/cost_calculator/dbus_vcpus.csv -P /dbfs/tmp/sync/gradient
 # MAGIC
 # MAGIC  
 # MAGIC # download data to destination folder
-# MAGIC wget -N https://raw.githubusercontent.com/syncpete/notebooks/main/fleet.csv -P /dbfs/tmp/sync/gradient
+# MAGIC wget -N https://github.com/synccomputingcode/client_tools/blob/main/cost_calculator/fleet.csv -P /dbfs/tmp/sync/gradient
 
 # COMMAND ----------
 
@@ -231,6 +231,7 @@ for clusterObj in clustersGen:
         "autoscale_max": safe_getattr(clusterObj, "autoscale.max_workers", 0),
         "spark_version": safe_getattr(clusterObj, "spark_version"),
         "policy_id": safe_getattr(clusterObj, "policy_id"),
+        "instance_pool_id": safe_getattr(clusterObj, "instance_pool_id", "None"),
         "custom_tags": safe_getattr(clusterObj, "custom_tags", "None"),
         "autotermination_minutes": safe_getattr(clusterObj, "autotermination_minutes"),
         "spark_conf": safe_getattr(clusterObj, "spark_conf", "None"),
@@ -266,6 +267,7 @@ clusterSchema = StructType([
 	StructField("autoscale_max", StringType()),
 	StructField("spark_version", StringType()),
 	StructField("policy_id", StringType()),
+ 	StructField("instance_pool_id", StringType()),
 	StructField("custom_tags", StringType()),
 	StructField("autotermination_minutes", StringType()),
 	StructField("spark_conf", StringType()),
@@ -456,6 +458,7 @@ def serialize_cluster_obj(job_id, run_id, task_key, clusterObj):
                         "autoscale_max": safe_getattr(clusterObj, "autoscale.max_workers", 0),
                         "spark_version": safe_getattr(clusterObj, "spark_version"),
                         "policy_id": safe_getattr(clusterObj, "policy_id"),
+                        "instance_pool_id": safe_getattr(clusterObj, "instance_pool_id", "None"),
                         "autotermination_minutes": str(safe_getattr(clusterObj, "autotermination_minutes")), 
                         "runtime_engine": safe_getattr(clusterObj, "runtime_engine.value", "None"),
                         "spark_conf": str(safe_getattr(clusterObj, "spark_conf", "None")),
@@ -490,6 +493,7 @@ def serialize_cluster_obj(job_id, run_id, task_key, clusterObj):
                         "autoscale_max": safe_getattr(clusterObj, "autoscale.max_workers", 0),
                         "spark_version": safe_getattr(clusterObj, "spark_version"),
                         "policy_id": safe_getattr(clusterObj, "policy_id"),
+                        "instance_pool_id": safe_getattr(clusterObj, "instance_pool_id", "None"),
                         "autotermination_minutes": str(safe_getattr(clusterObj, "autotermination_minutes")), 
                         "runtime_engine": safe_getattr(clusterObj, "runtime_engine.value", "None"),
                         "spark_conf": str(safe_getattr(clusterObj, "spark_conf", "None")),
@@ -584,6 +588,7 @@ for runObj in runsGen:
                     "autoscale_max": existing_cluster_row.asDict()['autoscale_max'],
                     "spark_version": existing_cluster_row.asDict()['spark_version'],
                     "policy_id": existing_cluster_row.asDict()['policy_id'],
+                    "instance_pool_id": existing_cluster_row.asDict()['instance_pool_id'],                    
                     "autotermination_minutes": existing_cluster_row.asDict()['autotermination_minutes'],   
                     "runtime_engine": existing_cluster_row.asDict()['runtime_engine'],
                     "spark_conf": existing_cluster_row.asDict()['spark_conf'],
@@ -695,6 +700,7 @@ cluster_schema = StructType([
     StructField("autoscale_max", StringType()),
     StructField("spark_version", StringType()),
     StructField("policy_id", StringType()),
+    StructField("instance_pool_id", StringType()),    
     StructField("autotermination_minutes", StringType()),
     StructField("runtime_engine", StringType()),
     StructField("spark_conf", StringType()),
@@ -784,6 +790,7 @@ display(sparkPoolsDF)
 # MAGIC autoscale_max,
 # MAGIC spark_version,
 # MAGIC policy_id,
+# MAGIC instance_pool_id,
 # MAGIC autotermination_minutes,
 # MAGIC runtime_engine,
 # MAGIC case when (num_workers = 'None') then 'Autoscale' else 'Fixed' end node_provision_method,
@@ -837,6 +844,26 @@ display(sparkPoolsDF)
 # MAGIC select jri.run_result_state, count(*)
 # MAGIC from gradient_usage_predictions.job_run_info jri
 # MAGIC group by 1
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC
+# MAGIC ## Job Runs by Instance Pool
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC
+# MAGIC select ajc.instance_pool_id,
+# MAGIC        pi.instance_pool_name,
+# MAGIC        pi.node_type_id,
+# MAGIC        count(distinct jri.run_name || jri.task_key) job_task_count,
+# MAGIC        count(distinct jri.run_id) run_count
+# MAGIC   from gradient_usage_predictions.job_run_info jri
+# MAGIC   join gradient_usage_predictions.all_job_clusters ajc on (jri.job_id = ajc.job_id and jri.task_key = ajc.task_key) 
+# MAGIC   join gradient_usage_predictions.pools_info pi on (ajc.instance_pool_id = pi.instance_pool_id)
+# MAGIC  group by ajc.instance_pool_id, pi.instance_pool_name, pi.node_type_id
 
 # COMMAND ----------
 
