@@ -41,11 +41,11 @@ dbutils.library.restartPython()
 # MAGIC mkdir -p /dbfs/tmp/sync/gradient # ensure destination folder exists
 # MAGIC  
 # MAGIC # download data to destination folder
-# MAGIC wget -N https://github.com/synccomputingcode/client_tools/blob/main/cost_calculator/dbus_vcpus.csv -P /dbfs/tmp/sync/gradient
+# MAGIC wget -N https://raw.githubusercontent.com/synccomputingcode/client_tools/main/cost_calculator/dbus_vcpus.csv -P /dbfs/tmp/sync/gradient
 # MAGIC
 # MAGIC  
 # MAGIC # download data to destination folder
-# MAGIC wget -N https://github.com/synccomputingcode/client_tools/blob/main/cost_calculator/fleet.csv -P /dbfs/tmp/sync/gradient
+# MAGIC wget -N https://raw.githubusercontent.com/synccomputingcode/client_tools/main/cost_calculator/fleet.csv -P /dbfs/tmp/sync/gradient
 
 # COMMAND ----------
 
@@ -506,7 +506,6 @@ def serialize_cluster_obj(job_id, run_id, task_key, clusterObj):
 
 import datetime
 from pyspark.sql.functions import col
-from databricks.sdk.service.jobs import ListRunsRunType
 
 start_date = (datetime.datetime.now().replace(minute=0, hour=0, second=0, microsecond=0) - datetime.timedelta(int(dbutils.widgets.get("days back"))))
 start_date = start_date.timestamp() * 1000
