@@ -19,6 +19,10 @@
 
 # COMMAND ----------
 
+dbutils.library.restartPython()
+
+# COMMAND ----------
+
 dbutils.widgets.text("DATABRICKS_RUN_ID", "")
 dbutils.widgets.text("DATABRICKS_JOB_ID", "")
 dbutils.widgets.text("DATABRICKS_COMPUTE_TYPE", "")
