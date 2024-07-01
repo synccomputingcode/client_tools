@@ -59,7 +59,7 @@ assert not any(line.status is AccessStatusCode.RED for line in access_report), "
 
 response = databricks.handle_successful_job_run(
         job_id=dbutils.widgets.get("DATABRICKS_JOB_ID"),
-        run_id=dbutils.widgets.get("DATABRICKS_RUN_ID") or dbutils.widgets.get("DATABRICKS_PARENT_RUN_ID"),
+        run_id=dbutils.widgets.get("DATABRICKS_PARENT_RUN_ID"),
         plan_type=dbutils.widgets.get("DATABRICKS_PLAN_TYPE"),
         compute_type=dbutils.widgets.get("DATABRICKS_COMPUTE_TYPE"),
         project_id=dbutils.widgets.get("SYNC_PROJECT_ID"),
