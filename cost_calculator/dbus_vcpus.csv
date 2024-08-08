@@ -1,474 +1,474 @@
 instance_type,vcpus,memory,dbus,cloud
-m4.large,2,8,0.4,AWS
-m4.xlarge,4,16,0.75,AWS
-m4.2xlarge,8,32,1.5,AWS
-m4.4xlarge,16,64,3,AWS
-m4.10xlarge,40,160,8,AWS
-m4.16xlarge,64,256,12,AWS
-m5.large,2,8,0.34,AWS
-m5.xlarge,4,16,0.69,AWS
-m5.2xlarge,8,32,1.37,AWS
-m5.4xlarge,16,64,2.74,AWS
-m5.8xlarge,32,128,5.48,AWS
-m5.12xlarge,48,192,8.23,AWS
-m5.16xlarge,64,256,10.96,AWS
-m5.24xlarge,96,384,16.46,AWS
-m5a.large,2,8,0.31,AWS
-m5a.xlarge,4,16,0.61,AWS
-m5a.2xlarge,8,32,1.23,AWS
-m5a.4xlarge,16,64,2.46,AWS
-m5a.8xlarge,32,128,4.91,AWS
-m5a.12xlarge,48,192,7.37,AWS
-m5a.16xlarge,64,256,9.83,AWS
-m5a.24xlarge,96,384,14.74,AWS
-m5d.large,2,8,0.34,AWS
-m5d.xlarge,4,16,0.69,AWS
-m5d.2xlarge,8,32,1.37,AWS
-m5d.4xlarge,16,64,2.74,AWS
-m5d.8xlarge,32,128,5.48,AWS
-m5d.12xlarge,48,192,8.23,AWS
-m5d.16xlarge,64,256,10.96,AWS
-m5d.24xlarge,96,384,16.46,AWS
-m5dn.large,2,8,0.41,AWS
-m5dn.xlarge,4,16,0.82,AWS
-m5dn.2xlarge,8,32,1.63,AWS
-m5dn.4xlarge,16,64,3.26,AWS
-m5dn.8xlarge,32,128,6.53,AWS
-m5dn.12xlarge,48,192,9.79,AWS
-m5dn.16xlarge,64,256,13.06,AWS
-m5dn.24xlarge,96,384,19.58,AWS
-m5n.large,2,8,0.36,AWS
-m5n.xlarge,4,16,0.71,AWS
-m5n.2xlarge,8,32,1.43,AWS
-m5n.4xlarge,16,64,2.86,AWS
-m5n.8xlarge,32,128,5.71,AWS
-m5n.12xlarge,48,192,8.57,AWS
-m5n.16xlarge,64,256,11.42,AWS
-m5n.24xlarge,96,384,17.14,AWS
-m5zn.large,2,8,0.5,AWS
-m5zn.xlarge,4,16,1,AWS
-m5zn.2xlarge,8,32,2,AWS
-m5zn.3xlarge,12,48,3,AWS
-m5zn.6xlarge,24,96,6,AWS
-m5zn.12xlarge,48,192,12,AWS
-m6g.large,2,8,0.39,AWS
-m6g.xlarge,4,16,0.77,AWS
-m6g.2xlarge,8,32,1.54,AWS
-m6g.4xlarge,16,64,3.07,AWS
-m6g.8xlarge,32,128,6.13,AWS
-m6g.12xlarge,48,192,9.21,AWS
-m6g.16xlarge,64,256,12.28,AWS
-m6gd.large,2,8,0.39,AWS
-m6gd.xlarge,4,16,0.77,AWS
-m6gd.2xlarge,8,32,1.54,AWS
-m6gd.4xlarge,16,64,3.07,AWS
-m6gd.8xlarge,32,128,6.13,AWS
-m6gd.12xlarge,48,192,9.21,AWS
-m6gd.16xlarge,64,256,12.28,AWS
-m6i.large,2,8,0.38,AWS
-m6i.xlarge,4,16,0.76,AWS
-m6i.2xlarge,8,32,1.52,AWS
-m6i.4xlarge,16,64,3.04,AWS
-m6i.8xlarge,32,128,6.08,AWS
-m6i.12xlarge,48,192,9.12,AWS
-m6i.16xlarge,64,256,12.16,AWS
-m6i.24xlarge,96,384,18.24,AWS
-m6i.32xlarge,128,512,24.32,AWS
-m6id.large,2,8,0.38,AWS
-m6id.xlarge,4,16,0.76,AWS
-m6id.2xlarge,8,32,1.52,AWS
-m6id.4xlarge,16,64,3.04,AWS
-m6id.8xlarge,32,128,6.08,AWS
-m6id.12xlarge,48,192,9.12,AWS
-m6id.16xlarge,64,256,12.16,AWS
-m6id.24xlarge,96,384,18.24,AWS
-m6id.32xlarge,128,512,24.32,AWS
-m6idn.large,2,8,0.38,AWS
-m6idn.xlarge,4,16,0.76,AWS
-m6idn.2xlarge,8,32,1.52,AWS
-m6idn.4xlarge,16,64,3.04,AWS
-m6idn.8xlarge,32,128,6.08,AWS
-m6idn.12xlarge,48,192,9.12,AWS
-m6idn.16xlarge,64,256,12.16,AWS
-m6idn.24xlarge,96,384,18.24,AWS
-m6idn.32xlarge,128,512,24.32,AWS
-m6in.large,2,8,0.38,AWS
-m6in.xlarge,4,16,0.76,AWS
-m6in.2xlarge,8,32,1.52,AWS
-m6in.4xlarge,16,64,3.04,AWS
-m6in.8xlarge,32,128,6.08,AWS
-m6in.12xlarge,48,192,9.12,AWS
-m6in.16xlarge,64,256,12.16,AWS
-m6in.24xlarge,96,384,18.24,AWS
-m6in.32xlarge,128,512,24.32,AWS
-m7g.large,2,8,0.48,AWS
-m7g.xlarge,4,16,0.96,AWS
-m7g.2xlarge,8,32,1.92,AWS
 m7g.4xlarge,16,64,3.84,AWS
-m7g.8xlarge,32,128,7.68,AWS
-m7g.12xlarge,48,192,11.52,AWS
+m5zn.2xlarge,8,32,2,AWS
+m7g.2xlarge,8,32,1.92,AWS
+m6gd.2xlarge,8,32,1.54,AWS
+m5zn.12xlarge,48,192,12,AWS
+m5.2xlarge,8,32,1.37,AWS
 m7g.16xlarge,64,256,15.36,AWS
-m7gd.large,2,8,0.48,AWS
-m7gd.xlarge,4,16,0.96,AWS
-m7gd.2xlarge,8,32,1.92,AWS
-m7gd.4xlarge,16,64,3.84,AWS
-m7gd.8xlarge,32,128,7.68,AWS
-m7gd.12xlarge,48,192,11.52,AWS
-m7gd.16xlarge,64,256,15.36,AWS
-r3.xlarge,4,31,1,AWS
+m5n.12xlarge,48,192,8.57,AWS
+m5d.4xlarge,16,64,2.74,AWS
+m6id.8xlarge,32,128,6.08,AWS
+m5d.large,2,8,0.34,AWS
+m6id.large,2,8,0.38,AWS
 r3.2xlarge,8,61,2,AWS
-r3.4xlarge,16,122,4,AWS
-r3.8xlarge,32,244,8,AWS
-r4.xlarge,4,31,1,AWS
-r4.2xlarge,8,61,2,AWS
-r4.4xlarge,16,122,4,AWS
-r4.8xlarge,32,244,8,AWS
-r4.16xlarge,64,488,16,AWS
-r5.large,2,16,0.45,AWS
-r5.xlarge,4,32,0.9,AWS
-r5.2xlarge,8,64,1.8,AWS
-r5.4xlarge,16,128,3.6,AWS
-r5.8xlarge,32,256,7.2,AWS
-r5.12xlarge,48,384,10.8,AWS
-r5.16xlarge,64,512,14.4,AWS
-r5.24xlarge,96,768,21.6,AWS
-r5a.large,2,16,0.41,AWS
-r5a.xlarge,4,32,0.81,AWS
-r5a.2xlarge,8,64,1.61,AWS
-r5a.4xlarge,16,128,3.23,AWS
-r5a.8xlarge,32,256,6.46,AWS
-r5a.12xlarge,48,384,9.69,AWS
-r5a.16xlarge,64,512,12.91,AWS
-r5a.24xlarge,96,768,19.37,AWS
-r5d.large,2,16,0.45,AWS
+m6i.16xlarge,64,256,12.16,AWS
+m5dn.12xlarge,48,192,9.79,AWS
+m5dn.4xlarge,16,64,3.26,AWS
+m5zn.xlarge,4,16,1,AWS
+m6g.xlarge,4,16,0.77,AWS
+m6g.4xlarge,16,64,3.07,AWS
+m6i.2xlarge,8,32,1.52,AWS
+m5n.xlarge,4,16,0.71,AWS
+m6gd.8xlarge,32,128,6.13,AWS
+m7g.12xlarge,48,192,11.52,AWS
+m5.12xlarge,48,192,8.23,AWS
+m5a.4xlarge,16,64,2.46,AWS
+m5d.12xlarge,48,192,8.23,AWS
+m6g.16xlarge,64,256,12.28,AWS
+m5d.2xlarge,8,32,1.37,AWS
+m5n.4xlarge,16,64,2.86,AWS
+m6in.16xlarge,64,256,12.16,AWS
+m7g.large,2,8,0.48,AWS
+m7gd.4xlarge,16,64,3.84,AWS
+m6in.4xlarge,16,64,3.04,AWS
+m7gd.8xlarge,32,128,7.68,AWS
+m6g.12xlarge,48,192,9.21,AWS
+m6idn.xlarge,4,16,0.76,AWS
+m5dn.16xlarge,64,256,13.06,AWS
+m7gd.large,2,8,0.48,AWS
+m6g.8xlarge,32,128,6.13,AWS
+m6i.xlarge,4,16,0.76,AWS
+m6id.32xlarge,128,512,24.32,AWS
+m6idn.8xlarge,32,128,6.08,AWS
+m6g.2xlarge,8,32,1.54,AWS
+m6in.24xlarge,96,384,18.24,AWS
+m5d.xlarge,4,16,0.69,AWS
+m5d.24xlarge,96,384,16.46,AWS
+r3.xlarge,4,31,1,AWS
+m6id.2xlarge,8,32,1.52,AWS
+m4.2xlarge,8,32,1.5,AWS
+m5dn.8xlarge,32,128,6.53,AWS
+m6in.xlarge,4,16,0.76,AWS
+m5a.8xlarge,32,128,4.91,AWS
+m6id.xlarge,4,16,0.76,AWS
+m5zn.3xlarge,12,48,3,AWS
+m5a.2xlarge,8,32,1.23,AWS
+m5a.16xlarge,64,256,9.83,AWS
+m5.16xlarge,64,256,10.96,AWS
+m4.xlarge,4,16,0.75,AWS
+m6g.large,2,8,0.39,AWS
+m7gd.16xlarge,64,256,15.36,AWS
+m4.4xlarge,16,64,3,AWS
+m5.xlarge,4,16,0.69,AWS
+m6id.16xlarge,64,256,12.16,AWS
+m6i.24xlarge,96,384,18.24,AWS
+m7g.xlarge,4,16,0.96,AWS
+m4.16xlarge,64,256,12,AWS
+m6i.large,2,8,0.38,AWS
+m6idn.large,2,8,0.38,AWS
+m5.4xlarge,16,64,2.74,AWS
+m6gd.xlarge,4,16,0.77,AWS
+m5dn.2xlarge,8,32,1.63,AWS
+m5dn.24xlarge,96,384,19.58,AWS
+m5zn.6xlarge,24,96,6,AWS
+m6gd.large,2,8,0.39,AWS
+m5n.8xlarge,32,128,5.71,AWS
+m7gd.12xlarge,48,192,11.52,AWS
+m6in.12xlarge,48,192,9.12,AWS
+m6i.32xlarge,128,512,24.32,AWS
+m6in.8xlarge,32,128,6.08,AWS
+m6idn.32xlarge,128,512,24.32,AWS
+m6gd.4xlarge,16,64,3.07,AWS
+m7gd.xlarge,4,16,0.96,AWS
+m6i.4xlarge,16,64,3.04,AWS
+m6in.large,2,8,0.38,AWS
+m5dn.large,2,8,0.41,AWS
+m5a.xlarge,4,16,0.61,AWS
+m5n.large,2,8,0.36,AWS
+m6id.24xlarge,96,384,18.24,AWS
+m6gd.12xlarge,48,192,9.21,AWS
+m6in.32xlarge,128,512,24.32,AWS
+m5.8xlarge,32,128,5.48,AWS
+m5n.2xlarge,8,32,1.43,AWS
+m4.large,2,8,0.4,AWS
+m5d.16xlarge,64,256,10.96,AWS
+m6i.8xlarge,32,128,6.08,AWS
+m5dn.xlarge,4,16,0.82,AWS
+m6idn.4xlarge,16,64,3.04,AWS
+m6i.12xlarge,48,192,9.12,AWS
+m5a.24xlarge,96,384,14.74,AWS
+m4.10xlarge,40,160,8,AWS
+m5zn.large,2,8,0.5,AWS
+m7gd.2xlarge,8,32,1.92,AWS
+m5a.12xlarge,48,192,7.37,AWS
+m5n.24xlarge,96,384,17.14,AWS
+m5.large,2,8,0.34,AWS
+m5n.16xlarge,64,256,11.42,AWS
+m6idn.2xlarge,8,32,1.52,AWS
+m5.24xlarge,96,384,16.46,AWS
+m6idn.12xlarge,48,192,9.12,AWS
+m6gd.16xlarge,64,256,12.28,AWS
+m6idn.16xlarge,64,256,12.16,AWS
+m5a.large,2,8,0.31,AWS
+m5d.8xlarge,32,128,5.48,AWS
+m6id.12xlarge,48,192,9.12,AWS
+m6in.2xlarge,8,32,1.52,AWS
+m6id.4xlarge,16,64,3.04,AWS
+m6idn.24xlarge,96,384,18.24,AWS
+m7g.8xlarge,32,128,7.68,AWS
 r5d.xlarge,4,32,0.9,AWS
-r5d.2xlarge,8,64,1.8,AWS
-r5d.4xlarge,16,128,3.6,AWS
-r5d.8xlarge,32,256,7.2,AWS
-r5d.12xlarge,48,384,10.8,AWS
-r5d.16xlarge,64,512,14.4,AWS
+r6gd.4xlarge,16,128,4,AWS
+r7g.2xlarge,8,64,2.52,AWS
+r6idn.24xlarge,96,768,24.48,AWS
+r5a.24xlarge,96,768,19.37,AWS
+r5n.16xlarge,64,512,14.4,AWS
 r5d.24xlarge,96,768,21.6,AWS
-r5dn.large,2,16,0.52,AWS
+r4.8xlarge,32,244,8,AWS
+r5.2xlarge,8,64,1.8,AWS
+r6i.8xlarge,32,256,8.16,AWS
+r6in.large,2,16,0.51,AWS
+r6i.4xlarge,16,128,4.08,AWS
+r6in.24xlarge,96,768,24.48,AWS
+r6gd.8xlarge,32,256,8,AWS
+r5a.xlarge,4,32,0.81,AWS
+r6i.32xlarge,128,1024,32.64,AWS
+r6i.2xlarge,8,64,2.04,AWS
+r6id.large,2,16,0.51,AWS
 r5dn.xlarge,4,32,1.04,AWS
+r6in.32xlarge,128,1024,32.64,AWS
+r7g.4xlarge,16,128,5.04,AWS
+z1d.12xlarge,48,384,15.94,AWS
+r7g.xlarge,4,32,1.26,AWS
+z1d.3xlarge,12,96,3.99,AWS
+r5n.large,2,16,0.45,AWS
+r5.xlarge,4,32,0.9,AWS
+z1d.xlarge,4,32,1.33,AWS
+r7gd.12xlarge,48,384,15.12,AWS
+r5n.8xlarge,32,256,7.2,AWS
+r6idn.32xlarge,128,1024,32.64,AWS
+r6idn.8xlarge,32,256,8.16,AWS
+r6gd.xlarge,4,32,1,AWS
+r6id.16xlarge,64,512,16.32,AWS
+r6i.xlarge,4,32,1.02,AWS
+r5dn.16xlarge,64,512,16.7,AWS
+r5n.2xlarge,8,64,1.8,AWS
+r6id.24xlarge,96,768,24.48,AWS
+r3.8xlarge,32,244,8,AWS
+r5a.12xlarge,48,384,9.69,AWS
+r5d.16xlarge,64,512,14.4,AWS
+r4.xlarge,4,31,1,AWS
+r6in.xlarge,4,32,1.02,AWS
+r6idn.12xlarge,48,384,12.24,AWS
+r6in.2xlarge,8,64,2.04,AWS
+r6in.16xlarge,64,512,16.32,AWS
+r7g.12xlarge,48,384,15.12,AWS
+r5n.4xlarge,16,128,3.6,AWS
+r6idn.large,2,16,0.51,AWS
+r5d.12xlarge,48,384,10.8,AWS
+r5.4xlarge,16,128,3.6,AWS
+r5d.2xlarge,8,64,1.8,AWS
+r6gd.12xlarge,48,384,12,AWS
+r6g.4xlarge,16,128,4,AWS
+r6in.8xlarge,32,256,8.16,AWS
+r5.8xlarge,32,256,7.2,AWS
+r7g.16xlarge,64,512,20.16,AWS
+r7gd.8xlarge,32,256,10.08,AWS
+r5n.xlarge,4,32,0.9,AWS
+r5a.16xlarge,64,512,12.91,AWS
+r7gd.2xlarge,8,64,2.52,AWS
+z1d.6xlarge,24,192,7.97,AWS
+z1d.2xlarge,8,64,2.66,AWS
+r6g.2xlarge,8,64,2,AWS
 r5dn.2xlarge,8,64,2.09,AWS
+r6id.4xlarge,16,128,4.08,AWS
+r4.16xlarge,64,488,16,AWS
+r5dn.12xlarge,48,384,12.53,AWS
+r6in.4xlarge,16,128,4.08,AWS
+r5dn.large,2,16,0.52,AWS
+r6gd.16xlarge,64,512,16,AWS
+r4.2xlarge,8,61,2,AWS
+r5dn.24xlarge,96,768,25.06,AWS
+r7g.8xlarge,32,256,10.08,AWS
+r5.24xlarge,96,768,21.6,AWS
+r5d.4xlarge,16,128,3.6,AWS
+r5.12xlarge,48,384,10.8,AWS
+r5n.12xlarge,48,384,10.8,AWS
+r6gd.2xlarge,8,64,2,AWS
+r6in.12xlarge,48,384,12.24,AWS
+r5d.large,2,16,0.45,AWS
+i2.xlarge,4,31,1.5,AWS
+r6i.large,2,16,0.51,AWS
+r5n.24xlarge,96,768,21.6,AWS
+r6i.16xlarge,64,512,16.32,AWS
+r6id.12xlarge,48,384,12.24,AWS
+r7gd.4xlarge,16,128,5.04,AWS
+r5.16xlarge,64,512,14.4,AWS
+r5a.4xlarge,16,128,3.23,AWS
+r7gd.xlarge,4,32,1.26,AWS
+r6idn.2xlarge,8,64,2.04,AWS
+r3.4xlarge,16,122,4,AWS
+r4.4xlarge,16,122,4,AWS
+r6i.24xlarge,96,768,24.48,AWS
+r6id.8xlarge,32,256,8.16,AWS
+r5a.large,2,16,0.41,AWS
+r6id.2xlarge,8,64,2.04,AWS
+r7gd.16xlarge,64,512,20.16,AWS
 r5dn.4xlarge,16,128,4.18,AWS
 r5dn.8xlarge,32,256,8.35,AWS
-r5dn.12xlarge,48,384,12.53,AWS
-r5dn.16xlarge,64,512,16.7,AWS
-r5dn.24xlarge,96,768,25.06,AWS
-r5n.large,2,16,0.45,AWS
-r5n.xlarge,4,32,0.9,AWS
-r5n.2xlarge,8,64,1.8,AWS
-r5n.4xlarge,16,128,3.6,AWS
-r5n.8xlarge,32,256,7.2,AWS
-r5n.12xlarge,48,384,10.8,AWS
-r5n.16xlarge,64,512,14.4,AWS
-r5n.24xlarge,96,768,21.6,AWS
-r6g.large,2,16,0.5,AWS
-r6g.xlarge,4,32,1,AWS
-r6g.2xlarge,8,64,2,AWS
-r6g.4xlarge,16,128,4,AWS
-r6g.8xlarge,32,256,8,AWS
-r6g.12xlarge,48,384,12,AWS
-r6g.16xlarge,64,512,16,AWS
 r6gd.large,2,16,0.5,AWS
-r6gd.xlarge,4,32,1,AWS
-r6gd.2xlarge,8,64,2,AWS
-r6gd.4xlarge,16,128,4,AWS
-r6gd.8xlarge,32,256,8,AWS
-r6gd.12xlarge,48,384,12,AWS
-r6gd.16xlarge,64,512,16,AWS
-r6i.large,2,16,0.51,AWS
-r6i.xlarge,4,32,1.02,AWS
-r6i.2xlarge,8,64,2.04,AWS
-r6i.4xlarge,16,128,4.08,AWS
-r6i.8xlarge,32,256,8.16,AWS
-r6i.12xlarge,48,384,12.24,AWS
-r6i.16xlarge,64,512,16.32,AWS
-r6i.24xlarge,96,768,24.48,AWS
-r6i.32xlarge,128,1024,32.64,AWS
-r6id.large,2,16,0.51,AWS
-r6id.xlarge,4,32,1.02,AWS
-r6id.2xlarge,8,64,2.04,AWS
-r6id.4xlarge,16,128,4.08,AWS
-r6id.8xlarge,32,256,8.16,AWS
-r6id.12xlarge,48,384,12.24,AWS
-r6id.16xlarge,64,512,16.32,AWS
-r6id.24xlarge,96,768,24.48,AWS
-r6id.32xlarge,128,1024,32.64,AWS
-r6idn.large,2,16,0.51,AWS
+r5.large,2,16,0.45,AWS
 r6idn.xlarge,4,32,1.02,AWS
-r6idn.2xlarge,8,64,2.04,AWS
-r6idn.4xlarge,16,128,4.08,AWS
-r6idn.8xlarge,32,256,8.16,AWS
-r6idn.12xlarge,48,384,12.24,AWS
-r6idn.16xlarge,64,512,16.32,AWS
-r6idn.24xlarge,96,768,24.48,AWS
-r6idn.32xlarge,128,1024,32.64,AWS
-r6in.large,2,16,0.51,AWS
-r6in.xlarge,4,32,1.02,AWS
-r6in.2xlarge,8,64,2.04,AWS
-r6in.4xlarge,16,128,4.08,AWS
-r6in.8xlarge,32,256,8.16,AWS
-r6in.12xlarge,48,384,12.24,AWS
-r6in.16xlarge,64,512,16.32,AWS
-r6in.24xlarge,96,768,24.48,AWS
-r6in.32xlarge,128,1024,32.64,AWS
 r7g.large,2,16,0.63,AWS
-r7g.xlarge,4,32,1.26,AWS
-r7g.2xlarge,8,64,2.52,AWS
-r7g.4xlarge,16,128,5.04,AWS
-r7g.8xlarge,32,256,10.08,AWS
-r7g.12xlarge,48,384,15.12,AWS
-r7g.16xlarge,64,512,20.16,AWS
-r7gd.large,2,16,0.63,AWS
-r7gd.xlarge,4,32,1.26,AWS
-r7gd.2xlarge,8,64,2.52,AWS
-r7gd.4xlarge,16,128,5.04,AWS
-r7gd.8xlarge,32,256,10.08,AWS
-r7gd.12xlarge,48,384,15.12,AWS
-r7gd.16xlarge,64,512,20.16,AWS
 z1d.large,2,16,0.66,AWS
-z1d.xlarge,4,32,1.33,AWS
-z1d.2xlarge,8,64,2.66,AWS
-z1d.3xlarge,12,96,3.99,AWS
-z1d.6xlarge,24,192,7.97,AWS
-z1d.12xlarge,48,384,15.94,AWS
-i2.xlarge,4,31,1.5,AWS
-i2.2xlarge,8,61,3,AWS
-i2.4xlarge,16,122,6,AWS
-i2.8xlarge,32,244,12,AWS
-i3.large,2,15,0.75,AWS
-i3.xlarge,4,31,1,AWS
-i3.2xlarge,8,61,2,AWS
-i3.4xlarge,16,122,4,AWS
-i3.8xlarge,32,244,8,AWS
-i3.16xlarge,64,488,16,AWS
-i3en.large,2,16,0.75,AWS
-i3en.xlarge,4,32,1.45,AWS
-i3en.2xlarge,8,64,2.9,AWS
-i3en.3xlarge,12,96,4.35,AWS
+r6g.16xlarge,64,512,16,AWS
+r6g.12xlarge,48,384,12,AWS
+r5d.8xlarge,32,256,7.2,AWS
+r6g.xlarge,4,32,1,AWS
+r5a.2xlarge,8,64,1.61,AWS
+r6i.12xlarge,48,384,12.24,AWS
+r6idn.16xlarge,64,512,16.32,AWS
+r6g.large,2,16,0.5,AWS
+r7gd.large,2,16,0.63,AWS
+r6g.8xlarge,32,256,8,AWS
+r6idn.4xlarge,16,128,4.08,AWS
+r6id.xlarge,4,32,1.02,AWS
+r6id.32xlarge,128,1024,32.64,AWS
+r5a.8xlarge,32,256,6.46,AWS
+i4i.large,2,16,0.69,AWS
 i3en.6xlarge,24,192,8.7,AWS
+i3en.3xlarge,12,96,4.35,AWS
+i4i.2xlarge,8,64,2.75,AWS
+i3en.large,2,16,0.75,AWS
+i4i.32xlarge,128,1024,44,AWS
+i3.2xlarge,8,61,2,AWS
+i2.8xlarge,32,244,12,AWS
+i2.4xlarge,16,122,6,AWS
+i4i.8xlarge,32,256,11,AWS
+i4i.4xlarge,16,128,5.5,AWS
+i3en.xlarge,4,32,1.45,AWS
 i3en.12xlarge,48,384,17.4,AWS
 i3en.24xlarge,96,768,34.8,AWS
-i4i.large,2,16,0.69,AWS
-i4i.xlarge,4,32,1.38,AWS
-i4i.2xlarge,8,64,2.75,AWS
-i4i.4xlarge,16,128,5.5,AWS
-i4i.8xlarge,32,256,11,AWS
+i3.8xlarge,32,244,8,AWS
+i3.4xlarge,16,122,4,AWS
+i3.xlarge,4,31,1,AWS
+i3en.2xlarge,8,64,2.9,AWS
+i3.16xlarge,64,488,16,AWS
 i4i.16xlarge,64,512,22,AWS
-i4i.32xlarge,128,1024,44,AWS
-DS3 v2,4,14,0.75,Azure
-DS4 v2,8,28,1.5,Azure
-DS5 v2,16,56,3,Azure
-D3 v2,4,14,0.75,Azure
-D4 v2,8,28,1.5,Azure
-D5 v2,16,56,3,Azure
-D4s v3,4,16,0.75,Azure
-D8s v3,8,32,1.5,Azure
-D16s v3,16,64,3,Azure
-D32s v3,32,128,6,Azure
-D64s v3,64,256,12,Azure
-D8 v3,8,32,1.5,Azure
-D16 v3,16,64,3,Azure
-D32 v3,32,128,6,Azure
-D64 v3,64,256,12,Azure
-D8as v4,8,32,1.5,Azure
-D16as v4,16,64,3,Azure
-D32as v4,32,128,6,Azure
-D48as v4,48,192,9,Azure
-D64as v4,64,256,12,Azure
-D96as v4,96,384,18,Azure
-D4a v4,4,16,0.75,Azure
-D8a v4,8,32,1.5,Azure
-D16a v4,16,64,3,Azure
-D32a v4,32,128,6,Azure
-D48a v4,48,192,9,Azure
-D64a v4,64,256,12,Azure
-D96a v4,96,384,18,Azure
-D4ds v4,4,16,0.75,Azure
-D8ds v4,8,32,1.5,Azure
-D16ds v4,16,64,3,Azure
-D32ds v4,32,128,6,Azure
-D48ds v4,48,192,9,Azure
-D64ds v4,64,256,12,Azure
-D4ads v5,4,16,1,Azure
-D8ads v5,8,32,2,Azure
-D16ads v5,16,64,4,Azure
-D32ads v5,32,128,8,Azure
-D48ads v5,48,192,12,Azure
-D64ads v5,64,256,16,Azure
-D96ads v5,96,384,24,Azure
-D4as v5,4,16,1,Azure
-D8as v5,8,32,2,Azure
-D16as v5,16,64,4,Azure
-D32as v5,32,128,8,Azure
-D48as v5,48,192,12,Azure
-D64as v5,64,256,16,Azure
-D96as v5,96,384,24,Azure
-D4ds v5,4,16,1,Azure
-D8ds v5,8,32,2,Azure
-D16ds v5,16,64,4,Azure
-D32ds v5,32,128,8,Azure
-D48ds v5,48,192,12,Azure
-D64ds v5,64,256,16,Azure
-D96ds v5,96,384,24,Azure
-D4d v4,4,16,0.75,Azure
-D8d v4,8,32,1.5,Azure
-D16d v4,16,64,3,Azure
-D32d v4,32,128,6,Azure
-D48d v4,48,192,9,Azure
-D64d v4,64,256,12,Azure
-D4s v5,4,16,1,Azure
-D8s v5,8,32,2,Azure
-D16s v5,16,64,4,Azure
-D32s v5,32,128,8,Azure
-D48s v5,48,192,12,Azure
-D64s v5,64,256,16,Azure
-D96s v5,96,384,24,Azure
-DS12 v2,4,28,1,Azure
-DS13 v2,8,56,2,Azure
-DS14 v2,16,112,4,Azure
-DS15 v2,20,140,5,Azure
-D12 v2,4,28,1,Azure
-D13 v2,8,56,2,Azure
-D14 v2,16,112,4,Azure
-D15 v2,20,140,5,Azure
-E4as v4,4,32,1,Azure
-E8as v4,8,64,2,Azure
-E16as v4,16,128,4,Azure
-E20as v4,20,160,5,Azure
-E32as v4,32,256,8,Azure
-E48as v4,48,384,12,Azure
-E64as v4,64,512,16,Azure
-E96as v4,96,672,24,Azure
-E4as v5,4,32,1.5,Azure
-E8as v5,8,64,2.75,Azure
-E16as v5,16,128,5.5,Azure
-E20as v5,20,160,7,Azure
-E32as v5,32,256,11,Azure
-E48as v5,48,384,16.5,Azure
-E64as v5,64,512,22,Azure
-E96as v5,96,672,33,Azure
-E4ads v5,4,32,1.5,Azure
-E8ads v5,8,64,2.75,Azure
-E16ads v5,16,128,5.5,Azure
-E20ads v5,20,160,7,Azure
-E32ads v5,32,256,11,Azure
-E48ads v5,48,384,16.5,Azure
-E64ads v5,64,512,22,Azure
-E96ads v5,96,672,33,Azure
-E8s v3,8,64,2,Azure
-E16s v3,16,128,4,Azure
-E32s v3,32,256,8,Azure
-E64s v3,64,432,16,Azure
-E8 v3,8,64,2,Azure
-E16 v3,16,128,4,Azure
-E32 v3,32,256,8,Azure
-E64 v3,64,432,16,Azure
-E4a v4,4,32,1,Azure
-E8a v4,8,64,2,Azure
-E16a v4,16,128,4,Azure
-E20a v4,20,160,5,Azure
-E32a v4,32,256,8,Azure
-E48a v4,48,384,12,Azure
-E64a v4,64,512,16,Azure
-E96a v4,96,672,24,Azure
-E4ds v4,4,32,1,Azure
-E8ds v4,8,64,2,Azure
-E16ds v4,16,128,4,Azure
-E20ds v4,20,160,5,Azure
-E32ds v4,32,256,8,Azure
-E48ds v4,48,384,12,Azure
-E64ds v4,64,504,16,Azure
-E80ids v4,80,504,20,Azure
-E4ds v5,4,32,1.5,Azure
-E8ds v5,8,64,2.75,Azure
-E16ds v5,16,128,5.5,Azure
-E20ds v5,20,160,7,Azure
-E32ds v5,32,256,11,Azure
-E48ds v5,48,384,16.5,Azure
-E64ds v5,64,512,22,Azure
-E96ds v5,96,672,33,Azure
-E4d v4,4,32,1,Azure
-E8d v4,8,64,2,Azure
-E16d v4,16,128,4,Azure
-E20d v4,20,160,5,Azure
-E32d v4,32,256,8,Azure
-E48d v4,48,384,12,Azure
-E64d v4,64,504,16,Azure
-E4s v4,4,32,1,Azure
-E8s v4,8,64,2,Azure
-E16s v4,16,128,4,Azure
-E20s v4,20,160,5,Azure
-E32s v4,32,256,8,Azure
-E48s v4,48,384,12,Azure
-E64s v4,64,504,16,Azure
-E80is v4,80,504,20,Azure
-E4s v5,4,32,1.5,Azure
-E8s v5,8,64,2.75,Azure
-E16s v5,16,128,5.5,Azure
-E20s v5,20,160,7,Azure
-E32s v5,32,256,11,Azure
-E48s v5,48,384,16.5,Azure
-E64s v5,64,512,22,Azure
-E96s v5,96,672,33,Azure
-L4s,4,32,1,Azure
-L8s,8,64,2,Azure
-L16s,16,128,4,Azure
-L32s,32,256,8,Azure
-L8s v2,8,64,2,Azure
-L16s v2,16,128,4,Azure
-L32s v2,32,256,8,Azure
-L64s v2,64,512,16,Azure
-L80s v2,80,640,20,Azure
-L8as v3,8,64,2.75,Azure
-L16as v3,16,128,5.5,Azure
-L32as v3,32,256,11,Azure
-L48as v3,48,384,16.5,Azure
-L64as v3,64,512,22,Azure
-L80as v3,80,640,27.5,Azure
-L8s v3,8,64,2.75,Azure
-L16s v3,16,128,5.5,Azure
-L32s v3,32,256,11,Azure
-L48s v3,48,384,16.5,Azure
-L64s v3,64,512,22,Azure
-L80s v3,80,640,27.5,Azure
-F4s v2,4,8,0.75,Azure
-F8s v2,8,16,1.5,Azure
-F16s v2,16,32,3,Azure
-F32s v2,32,64,6,Azure
-F64s v2,64,128,12,Azure
-F72s v2,72,144,13.5,Azure
-F4,4,8,0.5,Azure
-F8,8,16,1,Azure
-F16,16,32,2,Azure
-F4s,4,8,0.5,Azure
-F8s,8,16,1,Azure
-F16s,16,32,2,Azure
-NC12,12,112,3,Azure
-NC24,24,224,6,Azure
-NC24ads A100 v4,24,220,10,Azure
-NC48ads A100 v4,48,440,20,Azure
-NC96ads A100 v4,96,880,44,Azure
-NC4as T4 v3,4,28,1,Azure
-NC8as T4 v3,8,56,1.5,Azure
-NC16as T4 v3,16,110,2.5,Azure
-NC64as T4 v3,64,440,10,Azure
-NC6s v3,6,112,5,Azure
-NC12s v3,12,224,10,Azure
-NC24s v3,24,448,20,Azure
-ND96asr A100 v4,96,900,44,Azure
-NV36ads A10 v5,36,440,4,Azure
-NV36adms A10 v5,36,880,6,Azure
-NV72ads A10 v5,72,880,8,Azure
-DC4as v5,4,16,1,Azure
-DC8as v5,8,32,2,Azure
-DC16as v5,16,64,4,Azure
-DC32as v5,32,128,8,Azure
-EC8as v5,8,64,2.75,Azure
-EC16as v5,16,128,5.5,Azure
-EC32as v5,32,192,11,Azure
-EC8ads v5,8,64,2.75,Azure
-EC16ads v5,16,128,5.5,Azure
-EC32ads v5,32,192,11,Azure
+i4i.xlarge,4,32,1.38,AWS
+i2.2xlarge,8,61,3,AWS
+i3.large,2,15,0.75,AWS
+Standard_DC32as_v5,32,128,8,Azure
+Standard_D16ds_v5,16,64,4,Azure
+Standard_E48as_v5,48,384,16.5,Azure
+Standard_D14_v2,16,112,4,Azure
+Standard_D4as_v5,4,16,1,Azure
+Standard_D4s_v3,4,16,0.75,Azure
+Standard_F16,16,32,2,Azure
+Standard_E64s_v4,64,504,16,Azure
+Standard_D4ads_v5,4,16,1,Azure
+Standard_D64s_v5,64,256,16,Azure
+Standard_NC96ads_A100_v4,96,880,44,Azure
+Standard_DS12_v2,4,28,1,Azure
+Standard_E16d_v4,16,128,4,Azure
+Standard_E32as_v5,32,256,11,Azure
+Standard_E64s_v3,64,432,16,Azure
+Standard_E32s_v5,32,256,11,Azure
+Standard_D64s_v3,64,256,12,Azure
+Standard_L8s_v3,8,64,2.75,Azure
+Standard_L8as_v3,8,64,2.75,Azure
+Standard_NC48ads_A100_v4,48,440,20,Azure
+Standard_D32a_v4,32,128,6,Azure
+Standard_E48s_v5,48,384,16.5,Azure
+Standard_D16as_v4,16,64,3,Azure
+Standard_D96a_v4,96,384,18,Azure
+Standard_E8s_v5,8,64,2.75,Azure
+Standard_E20s_v5,20,160,7,Azure
+Standard_D48d_v4,48,192,9,Azure
+Standard_E64d_v4,64,504,16,Azure
+Standard_D4s_v5,4,16,1,Azure
+Standard_D96ads_v5,96,384,24,Azure
+Standard_E32ads_v5,32,256,11,Azure
+Standard_E8s_v3,8,64,2,Azure
+Standard_L80s_v3,80,640,27.5,Azure
+Standard_L64s_v3,64,512,22,Azure
+Standard_NC4as_T4_v3,4,28,1,Azure
+Standard_D4_v2,8,28,1.5,Azure
+Standard_L48s_v3,48,384,16.5,Azure
+Standard_NC12s_v3,12,224,10,Azure
+Standard_D16s_v3,16,64,3,Azure
+Standard_D64ds_v4,64,256,12,Azure
+Standard_E64ads_v5,64,512,22,Azure
+Standard_DC16as_v5,16,64,4,Azure
+Standard_E4s_v5,4,32,1.5,Azure
+Standard_E16as_v4,16,128,4,Azure
+Standard_E4ads_v5,4,32,1.5,Azure
+Standard_EC16as_v5,16,128,5.5,Azure
+Standard_D48a_v4,48,192,9,Azure
+Standard_DS14_v2,16,112,4,Azure
+Standard_ND96asr_A100_v4,96,900,44,Azure
+Standard_D96s_v5,96,384,24,Azure
+Standard_D32_v3,32,128,6,Azure
+Standard_D16a_v4,16,64,3,Azure
+Standard_E32s_v4,32,256,8,Azure
+Standard_E4ds_v5,4,32,1.5,Azure
+Standard_F8,8,16,1,Azure
+Standard_D16ds_v4,16,64,3,Azure
+Standard_F4s_v2,4,8,0.75,Azure
+Standard_L4s,4,32,1,Azure
+Standard_D64a_v4,64,256,12,Azure
+Standard_D4ds_v5,4,16,1,Azure
+Standard_D64ds_v5,64,256,16,Azure
+Standard_E20a_v4,20,160,5,Azure
+Standard_E32_v3,32,256,8,Azure
+Standard_E64ds_v5,64,512,22,Azure
+Standard_L16as_v3,16,128,5.5,Azure
+Standard_D8a_v4,8,32,1.5,Azure
+Standard_E48a_v4,48,384,12,Azure
+Standard_D15_v2,20,140,5,Azure
+Standard_D64as_v5,64,256,16,Azure
+Standard_L64s_v2,64,512,16,Azure
+Standard_F4,4,8,0.5,Azure
+Standard_EC32ads_v5,32,192,11,Azure
+Standard_D48ads_v5,48,192,12,Azure
+Standard_E16_v3,16,128,4,Azure
+Standard_E80ids_v4,80,504,20,Azure
+Standard_E96as_v5,96,672,33,Azure
+Standard_E64as_v5,64,512,22,Azure
+Standard_EC16ads_v5,16,128,5.5,Azure
+Standard_D32as_v5,32,128,8,Azure
+Standard_E8s_v4,8,64,2,Azure
+Standard_D32ds_v4,32,128,6,Azure
+Standard_E8d_v4,8,64,2,Azure
+Standard_D48s_v5,48,192,12,Azure
+Standard_E20as_v4,20,160,5,Azure
+Standard_E96as_v4,96,672,24,Azure
+Standard_E64ds_v4,64,504,16,Azure
+Standard_D64_v3,64,256,12,Azure
+Standard_D8ds_v5,8,32,2,Azure
+Standard_D96as_v5,96,384,24,Azure
+Standard_D3_v2,4,14,0.75,Azure
+Standard_D48as_v4,48,192,9,Azure
+Standard_D96as_v4,96,384,18,Azure
+Standard_E64a_v4,64,512,16,Azure
+Standard_D48as_v5,48,192,12,Azure
+Standard_F16s_v2,16,32,3,Azure
+Standard_NC64as_T4_v3,64,440,10,Azure
+Standard_D32s_v5,32,128,8,Azure
+Standard_E4as_v4,4,32,1,Azure
+Standard_D64as_v4,64,256,12,Azure
+Standard_E20ads_v5,20,160,7,Azure
+Standard_L80as_v3,80,640,27.5,Azure
+Standard_L48as_v3,48,384,16.5,Azure
+Standard_D32s_v3,32,128,6,Azure
+Standard_E16a_v4,16,128,4,Azure
+Standard_L64as_v3,64,512,22,Azure
+Standard_E16s_v4,16,128,4,Azure
+Standard_E8ds_v5,8,64,2.75,Azure
+Standard_D16as_v5,16,64,4,Azure
+Standard_D8s_v3,8,32,1.5,Azure
+Standard_E4a_v4,4,32,1,Azure
+Standard_E4as_v5,4,32,1.5,Azure
+Standard_E8_v3,8,64,2,Azure
+Standard_L16s_v3,16,128,5.5,Azure
+Standard_D5_v2,16,56,3,Azure
+Standard_DS3_v2,4,14,0.75,Azure
+Standard_DS4_v2,8,28,1.5,Azure
+Standard_D4d_v4,4,16,0.75,Azure
+Standard_NV36ads_A10_v5,36,440,4,Azure
+Standard_D64ads_v5,64,256,16,Azure
+Standard_E64as_v4,64,512,16,Azure
+Standard_F64s_v2,64,128,12,Azure
+Standard_L80s_v2,80,640,20,Azure
+Standard_E8a_v4,8,64,2,Azure
+Standard_D4ds_v4,4,16,0.75,Azure
+Standard_D16_v3,16,64,3,Azure
+Standard_D8d_v4,8,32,1.5,Azure
+Standard_E96s_v5,96,672,33,Azure
+Standard_E20ds_v4,20,160,5,Azure
+Standard_E32as_v4,32,256,8,Azure
+Standard_F4s,4,8,0.5,Azure
+Standard_NV36adms_A10_v5,36,880,6,Azure
+Standard_D32d_v4,32,128,6,Azure
+Standard_NC24s_v3,24,448,20,Azure
+Standard_D13_v2,8,56,2,Azure
+Standard_E48ds_v5,48,384,16.5,Azure
+Standard_E4s_v4,4,32,1,Azure
+Standard_D48ds_v4,48,192,9,Azure
+Standard_D8_v3,8,32,1.5,Azure
+Standard_DS15_v2,20,140,5,Azure
+Standard_L32s_v3,32,256,11,Azure
+Standard_D16d_v4,16,64,3,Azure
+Standard_D8ds_v4,8,32,1.5,Azure
+Standard_E4d_v4,4,32,1,Azure
+Standard_E96ads_v5,96,672,33,Azure
+Standard_D4a_v4,4,16,0.75,Azure
+Standard_E32ds_v4,32,256,8,Azure
+Standard_E48as_v4,48,384,12,Azure
+Standard_E4ds_v4,4,32,1,Azure
+Standard_D48ds_v5,48,192,12,Azure
+Standard_L16s_v2,16,128,4,Azure
+Standard_DC8as_v5,8,32,2,Azure
+Standard_D8s_v5,8,32,2,Azure
+Standard_F72s_v2,72,144,13.5,Azure
+Standard_E16ads_v5,16,128,5.5,Azure
+Standard_E64s_v5,64,512,22,Azure
+Standard_L8s_v2,8,64,2,Azure
+Standard_E16ds_v4,16,128,4,Azure
+Standard_E20d_v4,20,160,5,Azure
+Standard_E20ds_v5,20,160,7,Azure
+Standard_E48s_v4,48,384,12,Azure
+Standard_EC32as_v5,32,192,11,Azure
+Standard_E16s_v3,16,128,4,Azure
+Standard_E48ads_v5,48,384,16.5,Azure
+Standard_NC8as_T4_v3,8,56,1.5,Azure
+Standard_D16s_v5,16,64,4,Azure
+Standard_D8as_v5,8,32,2,Azure
+Standard_E32a_v4,32,256,8,Azure
+Standard_L32as_v3,32,256,11,Azure
+Standard_DS13_v2,8,56,2,Azure
+Standard_E64_v3,64,432,16,Azure
+Standard_E8as_v5,8,64,2.75,Azure
+Standard_F8s,8,16,1,Azure
+Standard_NC16as_T4_v3,16,110,2.5,Azure
+Standard_E48ds_v4,48,384,12,Azure
+Standard_D8as_v4,8,32,1.5,Azure
+Standard_D96ds_v5,96,384,24,Azure
+Standard_E20as_v5,20,160,7,Azure
+Standard_L16s,16,128,4,Azure
+Standard_DC4as_v5,4,16,1,Azure
+Standard_E16s_v5,16,128,5.5,Azure
+Standard_D64d_v4,64,256,12,Azure
+Standard_E32ds_v5,32,256,11,Azure
+Standard_E80is_v4,80,504,20,Azure
+Standard_EC8ads_v5,8,64,2.75,Azure
+Standard_NC24ads_A100_v4,24,220,10,Azure
+Standard_D16ads_v5,16,64,4,Azure
+Standard_D32ds_v5,32,128,8,Azure
+Standard_E96ds_v5,96,672,33,Azure
+Standard_D8ads_v5,8,32,2,Azure
+Standard_D32as_v4,32,128,6,Azure
+Standard_E20s_v4,20,160,5,Azure
+Standard_E96a_v4,96,672,24,Azure
+Standard_F32s_v2,32,64,6,Azure
+Standard_NV72ads_A10_v5,72,880,8,Azure
+Standard_E48d_v4,48,384,12,Azure
+Standard_NC12,12,112,3,Azure
+Standard_EC8as_v5,8,64,2.75,Azure
+Standard_F8s_v2,8,16,1.5,Azure
+Standard_D12_v2,4,28,1,Azure
+Standard_E8ds_v4,8,64,2,Azure
+Standard_NC6s_v3,6,112,5,Azure
+Standard_D32ads_v5,32,128,8,Azure
+Standard_DS5_v2,16,56,3,Azure
+Standard_E16as_v5,16,128,5.5,Azure
+Standard_E8as_v4,8,64,2,Azure
+Standard_E32d_v4,32,256,8,Azure
+Standard_L32s_v2,32,256,8,Azure
+Standard_E8ads_v5,8,64,2.75,Azure
+Standard_L8s,8,64,2,Azure
+Standard_E16ds_v5,16,128,5.5,Azure
+Standard_E32s_v3,32,256,8,Azure
+Standard_NC24,24,224,6,Azure
+Standard_F16s,16,32,2,Azure
+Standard_L32s,32,256,8,Azure
